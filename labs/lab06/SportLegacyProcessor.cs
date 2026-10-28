@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace SportEvents.Lab06;
 
 public class SportsParticipant
@@ -15,8 +12,16 @@ public class SportsParticipant
     public string Describe()
     {
         string text = Name.Trim().ToUpper();
-        if (Kind == "vip") text += " [VIP]";
-        if (DoneCount > 10) text += " [ЛОЯЛЬНИЙ]";
+        if (Kind == "vip")
+        {
+            text += " [VIP]";
+        }
+
+        if (DoneCount > 10)
+        {
+            text += " [ЛОЯЛЬНИЙ]";
+        }
+
         text += " <" + Email.ToLower() + ">";
         int years = DateTime.Now.Year - SinceUtc.Year;
         text += " стаж " + years;
@@ -52,10 +57,26 @@ public class SportLegacyProcessor
         string currency = request.Currency;
         bool sendMail = request.SendMail;
 
-        if (items is null) return "ERR: null";
-        if (items.Count == 0) return "ERR: empty";
-        if (state != "new" && state != "paid") return "ERR: state";
-        if (clientMail is null || !clientMail.Contains("@")) return "ERR: mail";
+        if (items is null)
+        {
+            return "ERR: null";
+        }
+
+        if (items.Count == 0)
+        {
+            return "ERR: empty";
+        }
+
+        if (state != "new" && state != "paid")
+        {
+            return "ERR: state";
+        }
+
+        if (clientMail is null || !clientMail.Contains("@"))
+        {
+            return "ERR: mail";
+        }
+
         _log.Add("ok " + docId);
 
         decimal subtotal = CalculateSubtotal(items);
@@ -67,8 +88,13 @@ public class SportLegacyProcessor
 
         string txt = BuildReport(new SportReportData
         {
-            DocId = docId, ClientName = clientName, Items = items,
-            Discount = discount, Ship = ship, Total = total, Currency = currency
+            DocId = docId,
+            ClientName = clientName,
+            Items = items,
+            Discount = discount,
+            Ship = ship,
+            Total = total,
+            Currency = currency
         });
 
         if (sendMail)
@@ -124,17 +150,26 @@ public class SportLegacyProcessor
         if (kind == "vip")
         {
             discount = subtotal * 0.15m;
-            if (discount > MaxDiscount) discount = MaxDiscount;
+            if (discount > MaxDiscount)
+            {
+                discount = MaxDiscount;
+            }
         }
         else if (kind == "staff")
         {
             discount = subtotal * 0.30m;
-            if (discount > MaxDiscount) discount = MaxDiscount;
+            if (discount > MaxDiscount)
+            {
+                discount = MaxDiscount;
+            }
         }
         else if (done > 10)
         {
             discount = subtotal * 0.05m;
-            if (discount > MaxDiscount) discount = MaxDiscount;
+            if (discount > MaxDiscount)
+            {
+                discount = MaxDiscount;
+            }
         }
 
         return discount;

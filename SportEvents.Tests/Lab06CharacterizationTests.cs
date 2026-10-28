@@ -23,10 +23,17 @@ public class Lab06CharacterizationTests
     {
         return sut.Handle(new SportRequest
         {
-            DocId = 1001, ClientId = 7, ClientName = "Іван",
-            ClientMail = mail, ClientKind = kind, ClientDone = 0,
-            Items = items, State = state, Currency = "UAH",
-            CreatedAt = new DateTime(2026, 3, 1), SendMail = false,
+            DocId = 1001,
+            ClientId = 7,
+            ClientName = "Іван",
+            ClientMail = mail,
+            ClientKind = kind,
+            ClientDone = 0,
+            Items = items,
+            State = state,
+            Currency = "UAH",
+            CreatedAt = new DateTime(2026, 3, 1),
+            SendMail = false,
         });
     }
 
@@ -79,8 +86,11 @@ public class Lab06CharacterizationTests
     {
         var participant = new SportsParticipant
         {
-            Name = " іван ", Email = "IVAN@MAIL.COM", Kind = "vip",
-            DoneCount = 12, SinceUtc = new DateTime(2020, 1, 1),
+            Name = " іван ",
+            Email = "IVAN@MAIL.COM",
+            Kind = "vip",
+            DoneCount = 12,
+            SinceUtc = new DateTime(2020, 1, 1),
         };
         string expected = "ІВАН [VIP] [ЛОЯЛЬНИЙ] <ivan@mail.com> стаж "
             + (DateTime.Now.Year - 2020);
@@ -93,10 +103,17 @@ public class Lab06CharacterizationTests
         var sut = new SportLegacyProcessor();
         sut.Handle(new SportRequest
         {
-            DocId = 1001, ClientId = 7, ClientName = "Іван",
-            ClientMail = "a@b.c", ClientKind = "regular", ClientDone = 0,
-            Items = Lines(), State = "new", Currency = "UAH",
-            CreatedAt = new DateTime(2026, 3, 1), SendMail = true,
+            DocId = 1001,
+            ClientId = 7,
+            ClientName = "Іван",
+            ClientMail = "a@b.c",
+            ClientKind = "regular",
+            ClientDone = 0,
+            Items = Lines(),
+            State = "new",
+            Currency = "UAH",
+            CreatedAt = new DateTime(2026, 3, 1),
+            SendMail = true,
         });
         Assert.Equal("ok 1001\nmail -> a@b.c\n", sut.DumpLog());
     }
