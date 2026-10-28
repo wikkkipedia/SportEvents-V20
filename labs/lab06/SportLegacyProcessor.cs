@@ -46,16 +46,7 @@ public class SportLegacyProcessor
         decimal ship = CalculateShipping(subtotal - discount);
         decimal total = subtotal - discount + ship;
 
-        string txt = "Документ #" + docId + "\n";
-        txt += "Клієнт: " + clientName + "\n";
-        for (int i = 0; i < items.Count; i++)
-        {
-            txt += items[i].Code + " x" + items[i].Qty + " = " +
-                (items[i].Qty * items[i].Price).ToString("0.00") + " " + currency + "\n";
-        }
-        txt += "Знижка: " + discount.ToString("0.00") + " " + currency + "\n";
-        txt += "Доставка: " + ship.ToString("0.00") + " " + currency + "\n";
-        txt += "Разом: " + total.ToString("0.00") + " " + currency + "\n";
+        string txt = BuildReport(docId, clientName, items, discount, ship, total, currency);
 
         if (sendMail)
         {
@@ -81,6 +72,24 @@ public class SportLegacyProcessor
         int years = DateTime.Now.Year - c.SinceUtc.Year;
         s += " стаж " + years;
         return s;
+    }
+
+    private static string BuildReport(int docId, string clientName,
+        List<SportsResultLine> items, decimal discount, decimal ship,
+        decimal total, string currency)
+    {
+        string txt = "Документ #" + docId + "\n";
+        txt += "Клієнт: " + clientName + "\n";
+        for (int i = 0; i < items.Count; i++)
+        {
+            txt += items[i].Code + " x" + items[i].Qty + " = " +
+                (items[i].Qty * items[i].Price).ToString("0.00") + " " + currency + "\n";
+        }
+        txt += "Знижка: " + discount.ToString("0.00") + " " + currency + "\n";
+        txt += "Доставка: " + ship.ToString("0.00") + " " + currency + "\n";
+        txt += "Разом: " + total.ToString("0.00") + " " + currency + "\n";
+
+        return txt;
     }
 
     private static decimal CalculateDiscount(decimal subtotal, string kind, int done)
