@@ -6,7 +6,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 PROGRAM = ROOT / "SportEvents.Console" / "SportEvents.Console.csproj"
 
-for label, content in (("EOF", ""), ("Exit option", "0\n")):
+for label, content in (("EOF", ""), ("Exit option", "0\n"), ("Trimmed exit option", " 0 \n")):
     completed = subprocess.run(
         ["dotnet", "run", "--project", str(PROGRAM), "-c", "Release", "--no-build"],
         cwd=ROOT,

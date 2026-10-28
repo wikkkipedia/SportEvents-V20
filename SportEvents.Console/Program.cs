@@ -33,7 +33,7 @@ internal static class Program
         while (true)
         {
             ShowMenu();
-            string? choice = System.Console.ReadLine();
+            string? choice = System.Console.ReadLine()?.Trim();
             // EOF is expected when input is redirected or the terminal is closed.
             // Exit instead of repeatedly printing the menu on null input.
             if (choice is null || choice == "0")
