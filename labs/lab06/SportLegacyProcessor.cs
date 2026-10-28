@@ -158,8 +158,12 @@ public class SportLegacyProcessor
 
     public string DumpLog()
     {
-        string r = "";
-        foreach (var l in _log) r += l + "\n";
-        return r;
+        var builder = new System.Text.StringBuilder();
+        foreach (string entry in _log)
+        {
+            builder.Append(entry).Append('\n');
+        }
+
+        return builder.ToString();
     }
 }
