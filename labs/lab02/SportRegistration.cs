@@ -1,11 +1,29 @@
 using System;
 using System.Collections.Generic;
+
 namespace SportEvents.Lab02;
 
+/// <summary>Реєстрація учасника в навчальному модулі SportEvents.</summary>
 public class SportRegistration
 {
+    private const int StatusNew = 0;
+    private const int StatusOpen = 1;
+    private const int StatusFinished = 2;
+    private const int StatusCancelled = 3;
+    private const int MinParticipantNameLength = 3;
+    private const int MaxLineCount = 100;
+    private const int BulkLineCount = 10;
+    private const decimal BulkDiscountAmount = 100m;
+    private const decimal RegularDiscountThreshold = 1000m;
+    private const decimal RegularDiscountFactor = 0.9m;
+    private const decimal LargeOrderThreshold = 5000m;
+    private const decimal LargeOrderFactor = 0.85m;
+    private const decimal FeeRate = 0.2m;
     private readonly List<string[]> _lines = new();
 
+    /// <summary>Створює запис реєстрації.</summary>
+    /// <param name="id">Номер реєстрації.</param>
+    /// <param name="participantName">Ім'я учасника.</param>
     public SportRegistration(string id, string participantName)
     {
         Id = id;
@@ -13,11 +31,22 @@ public class SportRegistration
         CreatedAt = DateTime.Now;
     }
 
+    /// <summary>Отримує номер реєстрації.</summary>
     public string Id { get; private set; }
+
+    /// <summary>Отримує ім'я учасника.</summary>
     public string ParticipantName { get; private set; }
+
+    /// <summary>Отримує поточний стан реєстрації.</summary>
     public int Status { get; private set; }
+
+    /// <summary>Отримує час створення.</summary>
     public DateTime CreatedAt { get; private set; }
 
+    /// <summary>Додає запис часу на дистанції.</summary>
+    /// <param name="code">Позначення дистанції.</param>
+    /// <param name="lapCount">Кількість кіл.</param>
+    /// <param name="lapTime">Час на коло.</param>
     public void AddLine(string code, int lapCount, decimal lapTime)
     {
         string[] line = new string[3];
@@ -27,6 +56,9 @@ public class SportRegistration
         _lines.Add(line);
     }
 
+    /// <summary>Обчислює суму навчального документа за історичними правилами.</summary>
+    /// <param name="isRegular">Чи застосувати знижку за навчальним правилом.</param>
+    /// <returns>Остаточний підсумок.</returns>
     public decimal CalculateTotal(bool isRegular)
     {
         decimal total = 0;
@@ -39,18 +71,18 @@ public class SportRegistration
             lineCount++;
         }
 
-        if (isRegular && total > 1000)
+        if (isRegular && total > RegularDiscountThreshold)
         {
-            total *= 0.9m;
+            total *= RegularDiscountFactor;
         }
-        else if (total > 5000)
+        else if (total > LargeOrderThreshold)
         {
-            total *= 0.85m;
+            total *= LargeOrderFactor;
         }
 
-        if (lineCount > 10)
+        if (lineCount > BulkLineCount)
         {
-            total -= 100;
+            total -= BulkDiscountAmount;
         }
 
         if (total < 0)
@@ -58,41 +90,50 @@ public class SportRegistration
             total = 0;
         }
 
-        total += total * 0.2m;
+        // Важливо: збережено порядок операцій та масштаб decimal із вихідного коду.
+        total += total * FeeRate;
         return Math.Round(total, 2);
     }
 
+    /// <summary>Змінює стан, тільки якщо перехід дозволено.</summary>
+    /// <param name="targetStatus">Бажаний стан.</param>
+    /// <returns>true для дозволеного переходу; інакше false.</returns>
     public bool TryChangeStatus(int targetStatus)
     {
-        if (Status == 0 && targetStatus == 1)
+        if (Status == StatusNew && targetStatus == StatusOpen)
         {
-            Status = 1;
+            Status = StatusOpen;
             return true;
         }
 
-        if (Status == 1 && targetStatus == 2)
+        if (Status == StatusOpen && targetStatus == StatusFinished)
         {
-            Status = 2;
+            Status = StatusFinished;
             return true;
         }
 
-        if (Status == 0 && targetStatus == 3)
+        if (Status == StatusNew && targetStatus == StatusCancelled)
         {
-            Status = 3;
+            Status = StatusCancelled;
             return true;
         }
 
         return false;
     }
 
+    /// <summary>Перевіряє, чи реєстрація містить необхідні дані.</summary>
+    /// <returns>true, якщо поля відповідають вимогам навчального модуля.</returns>
     public bool IsValid()
     {
         return Id is not null && Id.Length > 0
-            && ParticipantName is not null && ParticipantName.Length > 2
-            && _lines.Count > 0 && _lines.Count < 100
-            && Status >= 0 && Status <= 3;
+            && ParticipantName is not null
+            && ParticipantName.Length >= MinParticipantNameLength
+            && _lines.Count > 0 && _lines.Count < MaxLineCount
+            && Status >= StatusNew && Status <= StatusCancelled;
     }
 
+    /// <summary>Формує текстовий звіт без друку в консоль.</summary>
+    /// <returns>Текстовий звіт про дистанції та підсумок.</returns>
     public string BuildReport()
     {
         string report = "";
@@ -110,6 +151,10 @@ public class SportRegistration
         return report;
     }
 
+    /// <summary>Знаходить запис реєстрації за ідентифікатором.</summary>
+    /// <param name="registrations">Список реєстрацій.</param>
+    /// <param name="id">Шуканий ідентифікатор.</param>
+    /// <returns>Знайдений запис або null.</returns>
     public static SportRegistration? FindById(List<SportRegistration> registrations, string id)
     {
         for (int index = 0; index < registrations.Count; index++)
