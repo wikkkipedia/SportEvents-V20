@@ -65,3 +65,8 @@ dotnet_diagnostic.CA1859.severity = none
 # C# IDE style prefers unqualified member access; avoid conflicting StyleCop SA1101.
 [*.cs]
 dotnet_diagnostic.SA1101.severity = none
+
+# Lab 2: legacy decimal formatting must remain locale-sensitive for a byte-exact comparison.
+# This is recorded as technical debt rather than silently changing behaviour.
+[labs/lab02/*.cs]
+dotnet_diagnostic.CA1305.severity = none
