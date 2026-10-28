@@ -41,7 +41,7 @@ for match in pattern.finditer(text):
 folder=root/"docs/lab03-completion"
 folder.mkdir(exist_ok=True,parents=True)
 with (folder/"all-methods-audit.csv").open("w",encoding="utf-8",newline="") as f:
-    writer=csv.writer(f,delimiter=";")
+    writer=csv.writer(f,delimiter=";",lineterminator="\n")
     writer.writerow(["Method","CC_manual_proxy","LogicalLOC","MaxNestedBlocks","Parameters","Threshold"])
     writer.writerows(rows)
 result=["# ЛР №3 — перевірка всіх методів","", "Аудит проведено за правилами методички: CC = 1 + if/for/foreach/while/catch/case + логічні && та || + альтернативи C# pattern or. Метод має не більше 6 CC і не більше 4 параметрів.", "", "Підрахунок скриптовий за текстом C#, він не є офіційною метрикою Roslyn; для наведених методів структуру перевірено за вихідним кодом.", "", "| Метод | CC | Логічні рядки | Вкладеність | Параметри | Статус |", "|---|---:|---:|---:|---:|---|"]
