@@ -14,12 +14,12 @@ public sealed class EventService
     private const int JuniorStartYear = 2010;
     private const int AdultStartYear = 1990;
     private const int MastersStartYear = 1965;
-    private readonly IEventRepository _repository;
-    private readonly IClock _clock;
-    private readonly IResultRanking _ranking;
-    private readonly IAuditLogger _logger;
+    private readonly IEventRepository repository;
+    private readonly IClock clock;
+    private readonly IResultRanking ranking;
+    private readonly IAuditLogger logger;
 
-    /// <summary>Створює сервіс із тестованими залежностями.</summary>
+    /// <summary>Initializes a new instance of the <see cref="EventService"/> class.Створює сервіс із тестованими залежностями.</summary>
     /// <param name="repository">Зберігання стану.</param>
     /// <param name="clock">Джерело поточного часу.</param>
     /// <param name="ranking">Політика розподілу місць.</param>
@@ -27,30 +27,30 @@ public sealed class EventService
     public EventService(IEventRepository repository, IClock clock,
         IResultRanking ranking, IAuditLogger logger)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _ranking = ranking ?? throw new ArgumentNullException(nameof(ranking));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        this.clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        this.ranking = ranking ?? throw new ArgumentNullException(nameof(ranking));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <summary>Створює довідниковий запис учасника.</summary>
     /// <exception cref="ArgumentException">Некоректне ім'я, номер або дата.</exception>
     public void AddParticipant(int id, string name, DateOnly birthDate)
     {
-        if (id <= 0 || string.IsNullOrWhiteSpace(name) || birthDate > DateOnly.FromDateTime(_clock.Now.Date))
+        if (id <= 0 || string.IsNullOrWhiteSpace(name) || birthDate > DateOnly.FromDateTime(clock.Now.Date))
         {
             throw new ArgumentException("Неправильні дані учасника.");
         }
 
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         if (data.Participants.Any(p => p.Id == id))
         {
             throw new DomainRuleException("Учасник із таким номером уже є.");
         }
 
         data.Participants.Add(new Participant(id, name.Trim(), birthDate));
-        _repository.Save(data);
-        _logger.Write("Information", "UC-01", $"Додано учасника #{id}");
+        repository.Save(data);
+        logger.Write("Information", "UC-01", $"Додано учасника #{id}");
     }
 
     /// <summary>Створює змагання у стані Planned.</summary>
@@ -62,21 +62,21 @@ public sealed class EventService
             throw new ArgumentException("Вкажіть назву та додатну дистанцію.");
         }
 
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         int id = data.Events.Count == 0 ? 1 : data.Events.Max(e => e.Id) + 1;
         data.Events.Add(new SportsEvent(id, title.Trim(), date, distanceMeters, EventStatus.Planned));
-        _repository.Save(data);
-        _logger.Write("Information", "UC-02", $"Створено змагання #{id}");
+        repository.Save(data);
+        logger.Write("Information", "UC-02", $"Створено змагання #{id}");
         return id;
     }
 
     /// <summary>Відкриває реєстрацію на підготовлене змагання.</summary>
-    public void OpenEvent(int eventId) => ChangeStatus(eventId, EventStatus.Planned, EventStatus.Open);
+    public void OpenEvent(int eventId) => this.ChangeStatus(eventId, EventStatus.Planned, EventStatus.Open);
 
     /// <summary>Реєструє на відкрите змагання наявного учасника.</summary>
     public void Enroll(int eventId, int participantId)
     {
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         SportsEvent competition = GetEvent(data, eventId);
         RequireStatus(competition, EventStatus.Open);
         Participant person = data.Participants.SingleOrDefault(p => p.Id == participantId)
@@ -87,9 +87,9 @@ public sealed class EventService
             throw new DomainRuleException("Учасника вже зареєстровано.");
         }
 
-        data.Registrations.Add(new(eventId, participantId, DateOnly.FromDateTime(_clock.Now.Date)));
-        _repository.Save(data);
-        _logger.Write("Information", "UC-03", $"Реєстрація #{participantId} на #{eventId}");
+        data.Registrations.Add(new(eventId, participantId, DateOnly.FromDateTime(clock.Now.Date)));
+        repository.Save(data);
+        logger.Write("Information", "UC-03", $"Реєстрація #{participantId} на #{eventId}");
     }
 
     /// <summary>Фіксує додатний результат одного зареєстрованого учасника.</summary>
@@ -101,7 +101,7 @@ public sealed class EventService
             throw new ArgumentException("Час має бути додатним, меншим за добу та з точністю до мілісекунди.");
         }
 
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         RequireStatus(GetEvent(data, eventId), EventStatus.Open);
         if (!data.Registrations.Any(r => r.EventId == eventId && r.ParticipantId == participantId))
         {
@@ -114,14 +114,14 @@ public sealed class EventService
         }
 
         data.Results.Add(new(eventId, participantId, elapsed));
-        _repository.Save(data);
-        _logger.Write("Information", "UC-04", $"Результат #{participantId} на #{eventId}");
+        repository.Save(data);
+        logger.Write("Information", "UC-04", $"Результат #{participantId} на #{eventId}");
     }
 
     /// <summary>Завершує змагання лише за наявності результатів.</summary>
     public void FinishEvent(int eventId)
     {
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         RequireStatus(GetEvent(data, eventId), EventStatus.Open);
         if (!data.Results.Any(r => r.EventId == eventId))
         {
@@ -129,14 +129,14 @@ public sealed class EventService
         }
 
         ReplaceStatus(data, eventId, EventStatus.Finished);
-        _repository.Save(data);
-        _logger.Write("Information", "UC-05", $"Закрито змагання #{eventId}");
+        repository.Save(data);
+        logger.Write("Information", "UC-05", $"Закрито змагання #{eventId}");
     }
 
     /// <summary>Скасовує змагання, якщо його ще не завершено.</summary>
     public void CancelEvent(int eventId)
     {
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         SportsEvent competition = GetEvent(data, eventId);
         if (competition.Status is not (EventStatus.Planned or EventStatus.Open))
         {
@@ -144,14 +144,15 @@ public sealed class EventService
         }
 
         ReplaceStatus(data, eventId, EventStatus.Cancelled);
-        _repository.Save(data);
-        _logger.Write("Warning", "UC-05", $"Скасовано змагання #{eventId}");
+        repository.Save(data);
+        logger.Write("Warning", "UC-05", $"Скасовано змагання #{eventId}");
     }
 
     /// <summary>Шукає змагання одночасно за назвою та/або датою.</summary>
+    /// <returns></returns>
     public IReadOnlyList<SportsEvent> FindEvents(string? title, DateOnly? date)
     {
-        IEnumerable<SportsEvent> events = _repository.Load().Events;
+        IEnumerable<SportsEvent> events = repository.Load().Events;
         if (!string.IsNullOrWhiteSpace(title))
         {
             events = events.Where(e => e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
@@ -166,25 +167,27 @@ public sealed class EventService
     }
 
     /// <summary>Повертає відсортовані місця для сформованого чи активного змагання.</summary>
+    /// <returns></returns>
     public IReadOnlyList<ProtocolRow> GenerateProtocol(int eventId)
     {
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         SportsEvent competition = GetEvent(data, eventId);
         if (competition.Status is EventStatus.Planned or EventStatus.Cancelled)
         {
             throw new DomainRuleException("Протокол доступний лише для відкритих або завершених змагань.");
         }
 
-        return _ranking.Build(data, eventId);
+        return ranking.Build(data, eventId);
     }
 
     /// <summary>Кількість учасників у каталозі, для перевірки демонстраційних даних.</summary>
-    public int ParticipantCount() => _repository.Load().Participants.Count;
+    /// <returns></returns>
+    public int ParticipantCount() => repository.Load().Participants.Count;
 
     /// <summary>Створює 60 вигаданих учасників для навчального середовища.</summary>
     public void SeedDemoParticipants()
     {
-        if (ParticipantCount() > 0)
+        if (this.ParticipantCount() > 0)
         {
             return;
         }
@@ -197,18 +200,18 @@ public sealed class EventService
                 1 => AdultStartYear,
                 _ => MastersStartYear,
             };
-            DateOnly birthday = new(baseYear + id % DemoYearCycle, 1 + id % MonthsPerYear, DemoBirthDay);
-            AddParticipant(id, $"Тестовий учасник {id}", birthday);
+            DateOnly birthday = new(baseYear + (id % DemoYearCycle), 1 + (id % MonthsPerYear), DemoBirthDay);
+            this.AddParticipant(id, $"Тестовий учасник {id}", birthday);
         }
     }
 
     private void ChangeStatus(int id, EventStatus expected, EventStatus next)
     {
-        DataSnapshot data = _repository.Load();
+        DataSnapshot data = repository.Load();
         RequireStatus(GetEvent(data, id), expected);
         ReplaceStatus(data, id, next);
-        _repository.Save(data);
-        _logger.Write("Information", "UC-05", $"Стан змагання #{id}: {next}");
+        repository.Save(data);
+        logger.Write("Information", "UC-05", $"Стан змагання #{id}: {next}");
     }
 
     private static SportsEvent GetEvent(DataSnapshot data, int id)

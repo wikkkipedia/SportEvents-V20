@@ -5,13 +5,16 @@ namespace SportEvents.Core.Application;
 /// <summary>Знімок даних, який можна зберігати у JSON або в тестовому сховищі.</summary>
 public sealed class DataSnapshot
 {
-    /// <summary>Довідник учасників.</summary>
+    /// <summary>Gets or sets довідник учасників.</summary>
     public List<Participant> Participants { get; set; } = new();
-    /// <summary>Перелік змагань.</summary>
+
+    /// <summary>Gets or sets перелік змагань.</summary>
     public List<SportsEvent> Events { get; set; } = new();
-    /// <summary>Записи реєстрації.</summary>
+
+    /// <summary>Gets or sets записи реєстрації.</summary>
     public List<EventRegistration> Registrations { get; set; } = new();
-    /// <summary>Фінішні результати.</summary>
+
+    /// <summary>Gets or sets фінішні результати.</summary>
     public List<FinishResult> Results { get; set; } = new();
 }
 
@@ -30,7 +33,7 @@ public interface IEventRepository
 /// <summary>Підмінне джерело поточного часу.</summary>
 public interface IClock
 {
-    /// <summary>Поточний час з часовим поясом.</summary>
+    /// <summary>Gets поточний час з часовим поясом.</summary>
     DateTimeOffset Now { get; }
 }
 

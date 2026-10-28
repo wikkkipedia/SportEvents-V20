@@ -14,13 +14,14 @@ public sealed record LapSummaryResult(TimeSpan TotalElapsed, int LapCount);
 /// <summary>Чистий розрахунок підсумку, не виводить даних у консоль.</summary>
 public sealed class LapSummaryCalculator
 {
-    private readonly ElapsedTimePolicy _timePolicy;
+    private readonly ElapsedTimePolicy timePolicy;
 
-    /// <summary>Створює розрахунок з окремою політикою часу.</summary>
+    /// <summary>Initializes a new instance of the <see cref="LapSummaryCalculator"/> class.Створює розрахунок з окремою політикою часу.</summary>
     public LapSummaryCalculator(ElapsedTimePolicy timePolicy)
-        => _timePolicy = timePolicy ?? throw new ArgumentNullException(nameof(timePolicy));
+        => this.timePolicy = timePolicy ?? throw new ArgumentNullException(nameof(timePolicy));
 
     /// <summary>Перевіряє параметри та обчислює час дистанції.</summary>
+    /// <returns></returns>
     public LapSummaryResult Calculate(LapSummaryRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -29,7 +30,7 @@ public sealed class LapSummaryCalculator
             throw new ArgumentOutOfRangeException(nameof(request), "Номер змагання та учасника має бути додатним.");
         }
 
-        TimeSpan total = _timePolicy.SumSplits(request.Laps);
+        TimeSpan total = timePolicy.SumSplits(request.Laps);
         return new LapSummaryResult(total, request.Laps.Count);
     }
 }

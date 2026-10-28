@@ -18,29 +18,34 @@ public sealed class RankingTests
         Assert.Equal(expected, actual);
     }
 
-    [Fact] public void GetGroup_BirthAfterEvent_Throws()
+    [Fact]
+    public void GetGroup_BirthAfterEvent_Throws()
     {
         Assert.Throws<ArgumentException>(() => AgeRules.GetGroup(new DateOnly(2027, 1, 1), new DateOnly(2026, 11, 5)));
     }
 
-    [Fact] public void Ranking_AscendingTime_FirstIsFastest()
+    [Fact]
+    public void Ranking_AscendingTime_FirstIsFastest()
     {
         IReadOnlyList<ProtocolRow> rows = new RankingPolicy().Build(Data((1, 240), (2, 200), (3, 300)), 1);
         Assert.Equal(new[] { 2, 1, 3 }, rows.Select(r => r.ParticipantId).ToArray());
     }
 
-    [Fact] public void Ranking_SameTime_SharedRankWithGap()
+    [Fact]
+    public void Ranking_SameTime_SharedRankWithGap()
     {
         IReadOnlyList<ProtocolRow> rows = new RankingPolicy().Build(Data((1, 200), (2, 200), (3, 220)), 1);
         Assert.Equal(new[] { 1, 1, 3 }, rows.Select(r => r.Place).ToArray());
     }
 
-    [Fact] public void Ranking_EmptyResults_IsEmpty()
+    [Fact]
+    public void Ranking_EmptyResults_IsEmpty()
     {
         Assert.Empty(new RankingPolicy().Build(Data(), 1));
     }
 
-    [Fact] public void Ranking_SeparatesAgeGroups_EachStartsAtOne()
+    [Fact]
+    public void Ranking_SeparatesAgeGroups_EachStartsAtOne()
     {
         DataSnapshot data = Data((1, 200), (2, 210));
         data.Participants[1] = data.Participants[1] with { BirthDate = new DateOnly(2010, 1, 1) };
@@ -48,14 +53,16 @@ public sealed class RankingTests
         Assert.All(rows, row => Assert.Equal(1, row.Place));
     }
 
-    [Fact] public void Ranking_FiltersOtherEvents()
+    [Fact]
+    public void Ranking_FiltersOtherEvents()
     {
         DataSnapshot data = Data((1, 200));
         data.Results.Add(new FinishResult(2, 2, TimeSpan.FromSeconds(100)));
         Assert.Single(new RankingPolicy().Build(data, 1));
     }
 
-    [Fact] public void Ranking_IgnoresUnregisteredResult()
+    [Fact]
+    public void Ranking_IgnoresUnregisteredResult()
     {
         DataSnapshot data = Data((1, 200));
         data.Results.Add(new FinishResult(1, 999, TimeSpan.FromSeconds(50)));

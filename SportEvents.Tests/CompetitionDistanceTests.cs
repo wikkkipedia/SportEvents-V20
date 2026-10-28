@@ -3,7 +3,8 @@ using Xunit;
 namespace SportEvents.Tests;
 public sealed class CompetitionDistanceTests
 {
-    [Fact] public void New_PositiveDistance_KeepsValue()
+    [Fact]
+    public void New_PositiveDistance_KeepsValue()
         => Assert.Equal(5000, new CompetitionDistance(5000).Meters);
     [Theory]
     [InlineData(0)]

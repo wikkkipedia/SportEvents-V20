@@ -6,13 +6,15 @@ namespace SportEvents.Tests;
 
 public sealed class InfrastructureTests
 {
-    [Fact] public void JsonRepository_FileAbsent_EmptyData()
+    [Fact]
+    public void JsonRepository_FileAbsent_EmptyData()
     {
         string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
         Assert.Empty(new JsonEventRepository(path).Load().Events);
     }
 
-    [Fact] public void JsonRepository_SaveAndLoad_PreservesEvent()
+    [Fact]
+    public void JsonRepository_SaveAndLoad_PreservesEvent()
     {
         string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
         try
@@ -26,11 +28,15 @@ public sealed class InfrastructureTests
         }
         finally
         {
-            if (File.Exists(path)) File.Delete(path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
     }
 
-    [Fact] public void JsonRepository_InvalidJson_Throws()
+    [Fact]
+    public void JsonRepository_InvalidJson_Throws()
     {
         string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
         try
@@ -40,11 +46,15 @@ public sealed class InfrastructureTests
         }
         finally
         {
-            if (File.Exists(path)) File.Delete(path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
     }
 
-    [Fact] public void FileAuditLogger_Write_RecordsScenarioAndLevel()
+    [Fact]
+    public void FileAuditLogger_Write_RecordsScenarioAndLevel()
     {
         string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".log");
         try
@@ -55,7 +65,10 @@ public sealed class InfrastructureTests
         }
         finally
         {
-            if (File.Exists(path)) File.Delete(path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
     }
 }

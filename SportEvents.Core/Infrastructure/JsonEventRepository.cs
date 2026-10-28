@@ -6,25 +6,25 @@ namespace SportEvents.Core.Infrastructure;
 /// <summary>Файлове сховище стану у форматі JSON з безпечним записом через тимчасовий файл.</summary>
 public sealed class JsonEventRepository : IEventRepository
 {
-    private readonly string _path;
+    private readonly string path;
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
-    /// <summary>Налаштовує шлях до файлу з даними.</summary>
+    /// <summary>Initializes a new instance of the <see cref="JsonEventRepository"/> class.Налаштовує шлях до файлу з даними.</summary>
     /// <param name="path">Шлях у доступній для запису теці.</param>
     public JsonEventRepository(string path)
     {
-        _path = !string.IsNullOrWhiteSpace(path) ? path : throw new ArgumentException("Шлях порожній.");
+        this.path = !string.IsNullOrWhiteSpace(path) ? path : throw new ArgumentException("Шлях порожній.");
     }
 
     /// <inheritdoc />
     public DataSnapshot Load()
     {
-        if (!File.Exists(_path))
+        if (!File.Exists(path))
         {
             return new DataSnapshot();
         }
 
-        string json = File.ReadAllText(_path);
+        string json = File.ReadAllText(path);
         return JsonSerializer.Deserialize<DataSnapshot>(json)
             ?? throw new InvalidDataException("Файл JSON не містить об'єкта даних.");
     }
@@ -33,9 +33,9 @@ public sealed class JsonEventRepository : IEventRepository
     public void Save(DataSnapshot data)
     {
         ArgumentNullException.ThrowIfNull(data);
-        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_path))!);
-        string temporary = _path + ".tmp";
+        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+        string temporary = path + ".tmp";
         File.WriteAllText(temporary, JsonSerializer.Serialize(data, Options));
-        File.Move(temporary, _path, true);
+        File.Move(temporary, path, true);
     }
 }

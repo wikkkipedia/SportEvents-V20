@@ -1,10 +1,12 @@
 using System.Globalization;
+
 namespace SportEvents.Core.Application;
 
 /// <summary>Точне форматування часу проходження дистанції.</summary>
 public static class RaceTimeFormatter
 {
     /// <summary>Форматує час до мілісекунд без локальної залежності.</summary>
+    /// <returns></returns>
     public static string Format(TimeSpan duration)
     {
         ValidateDuration(duration);

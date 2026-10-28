@@ -1,6 +1,5 @@
 using SportEvents.Core.Application;
 using SportEvents.Core.Domain;
-using SportEvents.Core.Infrastructure;
 using Xunit;
 
 namespace SportEvents.Tests;

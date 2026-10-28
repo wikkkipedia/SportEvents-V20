@@ -5,10 +5,13 @@ public enum EventStatus
 {
     /// <summary>Підготовка.</summary>
     Planned,
+
     /// <summary>Реєстрацію відкрито.</summary>
     Open,
+
     /// <summary>Результати затверджено.</summary>
     Finished,
+
     /// <summary>Змагання скасовано.</summary>
     Cancelled,
 }
@@ -18,8 +21,10 @@ public enum AgeGroup
 {
     /// <summary>Менше ніж 18 років.</summary>
     Junior,
+
     /// <summary>Від 18 до 39 років.</summary>
     Adult,
+
     /// <summary>Від 40 років.</summary>
     Masters,
 }
@@ -54,7 +59,10 @@ public sealed record FinishResult(int EventId, int ParticipantId, TimeSpan Elaps
 /// <summary>Порушення правила переходу стану або участі у змаганні.</summary>
 public sealed class DomainRuleException : InvalidOperationException
 {
-    /// <summary>Створює помилку з поясненням порушеного правила.</summary>
+    /// <summary>Initializes a new instance of the <see cref="DomainRuleException"/> class.Створює помилку з поясненням порушеного правила.</summary>
     /// <param name="message">Повідомлення без персональних даних.</param>
-    public DomainRuleException(string message) : base(message) { }
+    public DomainRuleException(string message)
+        : base(message)
+    {
+    }
 }

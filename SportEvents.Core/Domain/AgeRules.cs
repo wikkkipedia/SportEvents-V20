@@ -5,6 +5,7 @@ public static class AgeRules
 {
     private const int AdultStartingAge = 18;
     private const int MastersStartingAge = 40;
+
     /// <summary>Повертає вікову групу саме на дату проведення змагання.</summary>
     /// <param name="birthDate">Дата народження учасника.</param>
     /// <param name="eventDate">Дата, на яку визначається вік.</param>
