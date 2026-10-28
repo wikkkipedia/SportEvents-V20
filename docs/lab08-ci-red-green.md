@@ -33,3 +33,9 @@ Pull request №1: https://github.com/wikkkipedia/SportEvents-V20/pull/1
 - d31721a — зелена гілка PR з усіма виправленнями.
 
 Локально також перевірено: red 137/138; green 138/138. GitHub і локальні результати не змішуються: окремі посилання вище підтверджують онлайн-запуски.
+
+## Після злиття PR №1
+
+Pull request №1 підтверджено як **MERGED** 28.10.2026. Merge commit: 5fd9c8e0498d1e3ce78429792611cd7dfc57bd1d.
+
+Окремий запуск від push до main після merge: **SUCCESS** — https://github.com/wikkkipedia/SportEvents-V20/actions/runs/40686263357 (Restore, format, Release, tests, coverage та artifact зелені).

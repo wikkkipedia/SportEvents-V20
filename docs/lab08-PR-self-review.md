@@ -1,6 +1,6 @@
 # GitHub Pull Request №1 — CI та контроль якості SportEvents
 
-Pull request: https://github.com/wikkkipedia/SportEvents-V20/pull/1
+Pull request: https://github.com/wikkkipedia/SportEvents-V20/pull/1 (MERGED, merge commit 5fd9c8e, 28.10.2026)
 
 ## Мета змін
 
@@ -15,7 +15,7 @@ Pull request: https://github.com/wikkkipedia/SportEvents-V20/pull/1
 - [x] Червоний GitHub Actions підтверджено: https://github.com/wikkkipedia/SportEvents-V20/actions/runs/40685289951
 - [x] Зелений GitHub Actions підтверджено: https://github.com/wikkkipedia/SportEvents-V20/actions/runs/40685561478
 - [x] В README є адресу справжнього репозиторію та GitHub Actions badge.
-- [ ] Після злиття PR перевірити зелений запуск від push у main.
+- [x] Після злиття PR підтверджено зелений запуск від push у main: https://github.com/wikkkipedia/SportEvents-V20/actions/runs/40686263357
 
 ## Ризики і обмеження
 
