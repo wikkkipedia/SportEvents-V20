@@ -1,0 +1,16 @@
+// Навчальний монолітний приклад, замінений декомпозицією. Не компілюється у проєкті.
+public static TimeSpan Process(int eventId, string participantName, List<TimeSpan> laps, bool output)
+{
+    if (eventId <= 0) return TimeSpan.MinValue;
+    if (string.IsNullOrWhiteSpace(participantName)) return TimeSpan.MinValue;
+    if (laps == null || laps.Count == 0) return TimeSpan.MinValue;
+    TimeSpan total = TimeSpan.Zero;
+    foreach (var lap in laps)
+    {
+        if (lap <= TimeSpan.Zero) return TimeSpan.MinValue;
+        if (lap >= TimeSpan.FromDays(1)) return TimeSpan.MinValue;
+        total += lap;
+    }
+    if (output) Console.WriteLine(total);
+    return total;
+}
