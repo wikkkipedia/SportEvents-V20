@@ -23,6 +23,9 @@ public class SportsResultLine
 
 public class SportLegacyProcessor
 {
+    private const decimal MaxDiscount = 500m;
+    private const decimal FreeShippingThreshold = 1000m;
+    private const decimal ShippingCost = 60m;
     private decimal _subtotal;
     private decimal _discount;
     private readonly List<string> _log = new();
@@ -72,21 +75,21 @@ public class SportLegacyProcessor
         if (clientKind == "vip")
         {
             _discount = _subtotal * 0.15m;
-            if (_discount > 500m) _discount = 500m;
+            if (_discount > MaxDiscount) _discount = MaxDiscount;
         }
         else if (clientKind == "staff")
         {
             _discount = _subtotal * 0.30m;
-            if (_discount > 500m) _discount = 500m;
+            if (_discount > MaxDiscount) _discount = MaxDiscount;
         }
         else if (clientDone > 10)
         {
             _discount = _subtotal * 0.05m;
-            if (_discount > 500m) _discount = 500m;
+            if (_discount > MaxDiscount) _discount = MaxDiscount;
         }
 
         decimal ship = 0m;
-        if (_subtotal - _discount < 1000m) ship = 60m;
+        if (_subtotal - _discount < FreeShippingThreshold) ship = ShippingCost;
         decimal total = _subtotal - _discount + ship;
 
         string txt = "Документ #" + docId + "\n";
@@ -118,20 +121,20 @@ public class SportLegacyProcessor
         if (clientKind == "vip")
         {
             d = s * 0.15m;
-            if (d > 500m) d = 500m;
+            if (d > MaxDiscount) d = MaxDiscount;
         }
         else if (clientKind == "staff")
         {
             d = s * 0.30m;
-            if (d > 500m) d = 500m;
+            if (d > MaxDiscount) d = MaxDiscount;
         }
         else if (clientDone > 10)
         {
             d = s * 0.05m;
-            if (d > 500m) d = 500m;
+            if (d > MaxDiscount) d = MaxDiscount;
         }
         decimal sh = 0m;
-        if (s - d < 1000m) sh = 60m;
+        if (s - d < FreeShippingThreshold) sh = ShippingCost;
         return s - d + sh;
     }
 
