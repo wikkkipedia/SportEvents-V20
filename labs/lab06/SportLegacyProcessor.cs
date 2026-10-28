@@ -43,8 +43,7 @@ public class SportLegacyProcessor
 
         decimal discount = CalculateDiscount(subtotal, clientKind, clientDone);
 
-        decimal ship = 0m;
-        if (subtotal - discount < FreeShippingThreshold) ship = ShippingCost;
+        decimal ship = CalculateShipping(subtotal - discount);
         decimal total = subtotal - discount + ship;
 
         string txt = "Документ #" + docId + "\n";
@@ -69,8 +68,7 @@ public class SportLegacyProcessor
     {
         decimal s = CalculateSubtotal(items);
         decimal d = CalculateDiscount(s, clientKind, clientDone);
-        decimal sh = 0m;
-        if (s - d < FreeShippingThreshold) sh = ShippingCost;
+        decimal sh = CalculateShipping(s - d);
         return s - d + sh;
     }
 
@@ -105,6 +103,11 @@ public class SportLegacyProcessor
         }
 
         return discount;
+    }
+
+    private static decimal CalculateShipping(decimal amount)
+    {
+        return amount < FreeShippingThreshold ? ShippingCost : 0m;
     }
 
     private static decimal CalculateSubtotal(List<SportsResultLine> items)
