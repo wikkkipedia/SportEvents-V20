@@ -1,0 +1,22 @@
+// УСПАДКОВАНИЙ ПРИКЛАД ДО ВИПРАВЛЕНЬ, У РІШЕННЯ НЕ КОМПІЛЮЄТЬСЯ
+using System;
+using System.Collections.Generic;
+namespace SportEvents.Core;
+public class rez
+{
+public string nm; public int id; public string ds;
+public List<string[]> sp = new List<string[]>();
+public int st = 0;
+// час і все що треба
+public void Add(string a,int b,string c) { sp.Add(new [] {a,b.ToString(),c}); }
+public double Calc(bool f) {
+double t=0; int n=0;
+for(int i=0;i<sp.Count;i++) {
+ t+=double.Parse(sp[i][2]); n++; }
+if(f==true && t>1000) { t=t*0.9; } else {t=t;}
+if(n>10) t=t-100;
+if(t<0)t=0;
+return Math.Round(t,2);
+}
+// public void Old(){} // невикористане
+}
