@@ -28,11 +28,19 @@ public class SportLegacyProcessor
     private const decimal ShippingCost = 60m;
     private readonly List<string> _log = new();
 
-    public string Handle(int docId, int clientId, string clientName,
-        string? clientMail, string clientKind, int clientDone,
-        List<SportsResultLine>? items, string state,
-        string currency, DateTime createdAt, bool sendMail)
+    public string Handle(SportRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        int docId = request.DocId;
+        string clientName = request.ClientName;
+        string? clientMail = request.ClientMail;
+        string clientKind = request.ClientKind;
+        int clientDone = request.ClientDone;
+        List<SportsResultLine>? items = request.Items;
+        string state = request.State;
+        string currency = request.Currency;
+        bool sendMail = request.SendMail;
+
         if (items is null) return "ERR: null";
         if (items.Count == 0) return "ERR: empty";
         if (state != "new" && state != "paid") return "ERR: state";

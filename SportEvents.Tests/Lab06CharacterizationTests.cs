@@ -21,8 +21,13 @@ public class Lab06CharacterizationTests
         List<SportsResultLine>? items, string state = "new",
         string? mail = "a@b.c", string kind = "regular")
     {
-        return sut.Handle(1001, 7, "Іван", mail, kind, 0,
-            items, state, "UAH", new DateTime(2026, 3, 1), false);
+        return sut.Handle(new SportRequest
+        {
+            DocId = 1001, ClientId = 7, ClientName = "Іван",
+            ClientMail = mail, ClientKind = kind, ClientDone = 0,
+            Items = items, State = state, Currency = "UAH",
+            CreatedAt = new DateTime(2026, 3, 1), SendMail = false,
+        });
     }
 
     [Theory]
@@ -86,8 +91,13 @@ public class Lab06CharacterizationTests
     public void Handle_SendMail_AddsAuditEntry()
     {
         var sut = new SportLegacyProcessor();
-        sut.Handle(1001, 7, "Іван", "a@b.c", "regular", 0, Lines(),
-            "new", "UAH", new DateTime(2026, 3, 1), true);
+        sut.Handle(new SportRequest
+        {
+            DocId = 1001, ClientId = 7, ClientName = "Іван",
+            ClientMail = "a@b.c", ClientKind = "regular", ClientDone = 0,
+            Items = Lines(), State = "new", Currency = "UAH",
+            CreatedAt = new DateTime(2026, 3, 1), SendMail = true,
+        });
         Assert.Equal("ok 1001\nmail -> a@b.c\n", sut.DumpLog());
     }
 }
