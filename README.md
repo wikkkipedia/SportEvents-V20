@@ -1,5 +1,7 @@
 # SportEvents — варіант 20
 
+[![SportEvents quality](https://github.com/wikkkipedia/SportEvents-V20/actions/workflows/ci.yml/badge.svg)](https://github.com/wikkkipedia/SportEvents-V20/actions/workflows/ci.yml)
+
 Навчальний консольний застосунок для реєстрації учасників і визначення результатів спортивних змагань.
 
 ## 1. Автор і навчальна дисципліна
@@ -7,7 +9,7 @@
 
 ## 2. Швидкий старт (три команди)
 ```bash
-git clone <АДРЕСА_ВАШОГО_РЕПОЗИТОРІЮ> SportEvents
+git clone https://github.com/wikkkipedia/SportEvents-V20.git SportEvents
 cd SportEvents
 dotnet run --project SportEvents.Console
 ```
@@ -30,7 +32,7 @@ dotnet restore SportEvents.sln
 dotnet build SportEvents.sln -c Release -warnaserror
 dotnet test SportEvents.Tests/SportEvents.Tests.csproj -c Release -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura
 ```
-У проєкті використано coverlet.msbuild. Реально перевірено на Windows 11, .NET SDK 9.0.318 із TargetFramework net8.0: **137 із 137 тестів зелені**, рядкове покриття всього рішення **90,59%**, гілок **83,47%**. Для основної бібліотеки SportEvents.Core — 96,56% рядків. Логи збережено у docs/lab06-completion, а попередня перевірка — verification.
+У проєкті використано coverlet.msbuild. Реально перевірено на Windows 11, .NET SDK 9.0.318 із TargetFramework net8.0: **138 із 138 тестів зелені**, рядкове покриття всього рішення **90,59%**, гілок **83,47%**. Для основної бібліотеки SportEvents.Core — 96,56% рядків. Логи збережено у docs/lab06-completion, а попередня перевірка — verification.
 
 ## 6. Технології
 .NET 8, C# 12, xUnit, coverlet.msbuild, Roslyn, StyleCop.Analyzers, GitHub Actions, JSON.
@@ -39,7 +41,7 @@ dotnet test SportEvents.Tests/SportEvents.Tests.csproj -c Release -p:CollectCove
 ```bash
 dotnet restore SportEvents.sln && dotnet format SportEvents.sln --verify-no-changes --no-restore && dotnet build SportEvents.sln -c Release -warnaserror && dotnet test SportEvents.Tests/SportEvents.Tests.csproj -c Release --no-restore -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura -p:Threshold=70 -p:ThresholdType=line -p:ThresholdStat=total
 ```
-Конвеєр `.github/workflows/ci.yml` повторює ці перевірки та зберігає звіт як артефакт. Локальний конвеєр проходить (restore, dotnet format, Release build, тести). Червоний/зелений онлайн-прогін GitHub наразі не підтверджено, доки не виконано авторизацію і публікацію репозиторію.
+Конвеєр `.github/workflows/ci.yml` повторює ці перевірки та зберігає звіт як артефакт. Локальний конвеєр проходить (restore, dotnet format, Release build, тести). Реальний [червоний GitHub Actions](https://github.com/wikkkipedia/SportEvents-V20/actions/runs/40685289951) і [зелений GitHub Actions](https://github.com/wikkkipedia/SportEvents-V20/actions/runs/40685561478) підтверджені в pull request №1. Результати та докази: [docs/lab08-ci-red-green.md](docs/lab08-ci-red-green.md).
 
 ## 8. Обмеження і борг
 Немає графічного інтерфейсу, бази даних і вебсервісу. Фініш зберігається з точністю до мілісекунд; суддівська фотофінішна система не передбачена. Не підтримано командні естафети, дискваліфікацію та імпорт результатів із пристроїв. Журнал містить лише коди подій і номери, а не імена учасників. Реальний dotnet test виконано, а відсотки покриття наведено вище. Старі успадковані навчальні модулі у каталозі labs збережено для перевірки ЛР №2, №3 і №6; вони не використовуються в основній консолі.
