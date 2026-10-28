@@ -23,8 +23,8 @@ public class SportsResultLine
 
 public class SportLegacyProcessor
 {
-    private decimal _tmpSum;
-    private decimal _tmpDiscount;
+    private decimal _subtotal;
+    private decimal _discount;
     private readonly List<string> _log = new();
 
     public string Handle(int docId, int clientId, string clientName,
@@ -62,32 +62,32 @@ public class SportLegacyProcessor
             return "ERR: null";
         }
 
-        _tmpSum = 0m;
+        _subtotal = 0m;
         for (int i = 0; i < items.Count; i++)
         {
-            _tmpSum += items[i].Qty * items[i].Price;
+            _subtotal += items[i].Qty * items[i].Price;
         }
 
-        _tmpDiscount = 0m;
+        _discount = 0m;
         if (clientKind == "vip")
         {
-            _tmpDiscount = _tmpSum * 0.15m;
-            if (_tmpDiscount > 500m) _tmpDiscount = 500m;
+            _discount = _subtotal * 0.15m;
+            if (_discount > 500m) _discount = 500m;
         }
         else if (clientKind == "staff")
         {
-            _tmpDiscount = _tmpSum * 0.30m;
-            if (_tmpDiscount > 500m) _tmpDiscount = 500m;
+            _discount = _subtotal * 0.30m;
+            if (_discount > 500m) _discount = 500m;
         }
         else if (clientDone > 10)
         {
-            _tmpDiscount = _tmpSum * 0.05m;
-            if (_tmpDiscount > 500m) _tmpDiscount = 500m;
+            _discount = _subtotal * 0.05m;
+            if (_discount > 500m) _discount = 500m;
         }
 
         decimal ship = 0m;
-        if (_tmpSum - _tmpDiscount < 1000m) ship = 60m;
-        decimal total = _tmpSum - _tmpDiscount + ship;
+        if (_subtotal - _discount < 1000m) ship = 60m;
+        decimal total = _subtotal - _discount + ship;
 
         string txt = "Документ #" + docId + "\n";
         txt += "Клієнт: " + clientName + "\n";
@@ -96,7 +96,7 @@ public class SportLegacyProcessor
             txt += items[i].Code + " x" + items[i].Qty + " = " +
                 (items[i].Qty * items[i].Price).ToString("0.00") + " " + currency + "\n";
         }
-        txt += "Знижка: " + _tmpDiscount.ToString("0.00") + " " + currency + "\n";
+        txt += "Знижка: " + _discount.ToString("0.00") + " " + currency + "\n";
         txt += "Доставка: " + ship.ToString("0.00") + " " + currency + "\n";
         txt += "Разом: " + total.ToString("0.00") + " " + currency + "\n";
 
