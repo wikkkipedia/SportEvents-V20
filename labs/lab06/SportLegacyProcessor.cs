@@ -11,6 +11,17 @@ public class SportsParticipant
     public string Kind = "regular";
     public int DoneCount;
     public DateTime SinceUtc;
+
+    public string Describe()
+    {
+        string text = Name.Trim().ToUpper();
+        if (Kind == "vip") text += " [VIP]";
+        if (DoneCount > 10) text += " [ЛОЯЛЬНИЙ]";
+        text += " <" + Email.ToLower() + ">";
+        int years = DateTime.Now.Year - SinceUtc.Year;
+        text += " стаж " + years;
+        return text;
+    }
 }
 
 public class SportsResultLine
@@ -75,15 +86,9 @@ public class SportLegacyProcessor
         return s - d + sh;
     }
 
-    public string DescribeClient(SportsParticipant c)
+    public string DescribeClient(SportsParticipant participant)
     {
-        string s = c.Name.Trim().ToUpper();
-        if (c.Kind == "vip") s += " [VIP]";
-        if (c.DoneCount > 10) s += " [ЛОЯЛЬНИЙ]";
-        s += " <" + c.Email.ToLower() + ">";
-        int years = DateTime.Now.Year - c.SinceUtc.Year;
-        s += " стаж " + years;
-        return s;
+        return participant.Describe();
     }
 
     private sealed record SportReportData
