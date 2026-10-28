@@ -1,4 +1,6 @@
 namespace SportEvents.Lab03;
+
+/// <summary>Рядок обліку дистанції у навчальному прикладі.</summary>
 public sealed class RaceChargeLine
 {
     public string Code { get; set; } = "";
@@ -6,96 +8,118 @@ public sealed class RaceChargeLine
     public decimal UnitPrice { get; set; }
 }
 
+/// <summary>Обробник, який після рефакторингу делегує розрахунки малим методам.</summary>
 public static class LegacyProcessor
 {
-    public static decimal Process(
-        int docId, string clientName, string clientEmail,
-        bool isRegular, List<RaceChargeLine> lines,
-        DateOnly createdAt, string couponCode, string status,
-        bool printToConsole, decimal deliveryPrice,
-        out string newStatus)
+    /// <summary>Розраховує підсумок і переходить до наступного стану.</summary>
+    public static RaceOutcome Process(RaceRequest request)
     {
-        newStatus = status;
-        decimal total = 0;
-        if (docId <= 0)
+        ArgumentNullException.ThrowIfNull(request);
+        string? error = Validate(request);
+        if (error is not null)
         {
-            Console.WriteLine("Помилка: номер документа");
-            return -1;
+            Console.WriteLine(error);
+            return new RaceOutcome(-1m, request.Status);
         }
-        if (clientName == null || clientName == "")
+
+        decimal total = CalculateLines(request.Lines);
+        total = ApplyDiscounts(total, request);
+        total = ApplyDelivery(total, request);
+        string next = TransitionStatus(request.Status, total);
+        if (next == "Cancelled")
         {
-            Console.WriteLine("Помилка: немає клієнта");
-            return -1;
+            total = 0m;
         }
-        if (clientEmail == null || !clientEmail.Contains("@"))
+
+        if (request.PrintToConsole)
         {
-            Console.WriteLine("Помилка: пошта клієнта");
-            return -1;
+            Console.Write(BuildReport(request, total, next));
         }
-        if (lines == null || lines.Count == 0)
+
+        return new RaceOutcome(total, next);
+    }
+
+    private static string? Validate(RaceRequest request)
+    {
+        if (request.DocId <= 0) return "Помилка: номер документа";
+        if (string.IsNullOrEmpty(request.ClientName)) return "Помилка: немає клієнта";
+        if (request.ClientEmail == null || !request.ClientEmail.Contains("@"))
         {
-            Console.WriteLine("Помилка: немає позицій");
-            return -1;
+            return "Помилка: пошта клієнта";
         }
-        if (status != "New" && status != "Paid" &&
-            status != "Shipped" && status != "Cancelled")
+
+        if (request.Lines == null || request.Lines.Count == 0) return "Помилка: немає позицій";
+        if (request.Status != "New" && request.Status != "Paid" &&
+            request.Status != "Shipped" && request.Status != "Cancelled")
         {
-            Console.WriteLine("Помилка: невідомий стан");
-            return -1;
+            return "Помилка: невідомий стан";
         }
-        for (int i = 0; i < lines.Count; i++)
+
+        return ValidateLines(request.Lines);
+    }
+
+    private static string? ValidateLines(IReadOnlyList<RaceChargeLine> lines)
+    {
+        foreach (RaceChargeLine line in lines)
         {
-            if (lines[i].Quantity <= 0)
-            {
-                Console.WriteLine("Помилка: кількість");
-                return -1;
-            }
-            if (lines[i].UnitPrice < 0)
-            {
-                Console.WriteLine("Помилка: ціна");
-                return -1;
-            }
-            decimal sum = lines[i].Quantity * lines[i].UnitPrice;
-            if (lines[i].Quantity >= 10)
-                sum = sum * 0.95m;
-            total = total + sum;
+            if (line.Quantity <= 0) return "Помилка: кількість";
+            if (line.UnitPrice < 0m) return "Помилка: ціна";
         }
-        if (isRegular)
-            total = total * 0.93m;
-        if (total > 5000)
-            total = total * 0.9m;
-        else if (total > 2000)
-            total = total * 0.95m;
-        if (couponCode == "SALE10")
-            total = total - total * 0.1m;
-        else if (couponCode == "MINUS200" && total > 1000)
-            total = total - 200;
-        if (createdAt.DayOfWeek == DayOfWeek.Sunday)
-            total = total * 0.98m;
-        if (total < 1000)
-            total = total + deliveryPrice;
-        if (total < 0)
-            total = 0;
-        total = Math.Round(total, 2);
-        if (status == "New" && total > 0)
-            newStatus = "Paid";
-        else if (status == "Paid")
-            newStatus = "Shipped";
-        else if (status == "Cancelled")
+
+        return null;
+    }
+
+    private static decimal CalculateLines(IReadOnlyList<RaceChargeLine> lines)
+    {
+        decimal total = 0m;
+        foreach (RaceChargeLine line in lines)
         {
-            newStatus = "Cancelled";
-            total = 0;
+            decimal sum = line.Quantity * line.UnitPrice;
+            if (line.Quantity >= 10) sum *= 0.95m;
+            total += sum;
         }
-        if (printToConsole)
-        {
-            Console.WriteLine("Документ № " + docId);
-            Console.WriteLine("Клієнт: " + clientName);
-            Console.WriteLine("Пошта: " + clientEmail);
-            for (int i = 0; i < lines.Count; i++)
-                Console.WriteLine(lines[i].Code + " x " + lines[i].Quantity);
-            Console.WriteLine("Разом: " + total);
-            Console.WriteLine("Стан: " + newStatus);
-        }
+
         return total;
+    }
+
+    private static decimal ApplyDiscounts(decimal total, RaceRequest request)
+    {
+        if (request.IsRegular) total *= 0.93m;
+        if (total > 5000m) total *= 0.9m;
+        else if (total > 2000m) total *= 0.95m;
+        if (request.CouponCode == "SALE10") total -= total * 0.1m;
+        else if (request.CouponCode == "MINUS200" && total > 1000m) total -= 200m;
+        if (request.CreatedAt.DayOfWeek == DayOfWeek.Sunday) total *= 0.98m;
+        return total;
+    }
+
+    private static decimal ApplyDelivery(decimal total, RaceRequest request)
+    {
+        if (total < 1000m) total += request.DeliveryPrice;
+        if (total < 0m) total = 0m;
+        return Math.Round(total, 2);
+    }
+
+    private static string TransitionStatus(string status, decimal total)
+    {
+        if (status == "New" && total > 0m) return "Paid";
+        if (status == "Paid") return "Shipped";
+        return status;
+    }
+
+    private static string BuildReport(RaceRequest request, decimal total, string next)
+    {
+        var report = new System.Text.StringBuilder();
+        report.AppendLine("Документ № " + request.DocId);
+        report.AppendLine("Клієнт: " + request.ClientName);
+        report.AppendLine("Пошта: " + request.ClientEmail);
+        foreach (RaceChargeLine line in request.Lines)
+        {
+            report.AppendLine(line.Code + " x " + line.Quantity);
+        }
+
+        report.AppendLine("Разом: " + total);
+        report.AppendLine("Стан: " + next);
+        return report.ToString();
     }
 }

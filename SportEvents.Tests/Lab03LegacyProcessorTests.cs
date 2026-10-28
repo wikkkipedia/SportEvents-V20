@@ -5,40 +5,45 @@ namespace SportEvents.Tests;
 
 public class Lab03LegacyProcessorTests
 {
-    private static List<RaceChargeLine> Lines() => new()
+    private static RaceRequest Request(string status = "New", bool isRegular = false)
     {
-        new RaceChargeLine { Code = "100m", Quantity = 12, UnitPrice = 100m },
-        new RaceChargeLine { Code = "200m", Quantity = 1, UnitPrice = 250m },
-    };
+        return new RaceRequest
+        {
+            DocId = 1, ClientName = "Іван", ClientEmail = "a@b.com", Status = status,
+            IsRegular = isRegular, CreatedAt = new DateOnly(2026, 3, 10),
+            DeliveryPrice = 60m, Lines = new List<RaceChargeLine>
+            {
+                new() { Code = "100m", Quantity = 12, UnitPrice = 100m },
+                new() { Code = "200m", Quantity = 1, UnitPrice = 250m },
+            },
+        };
+    }
 
     [Fact]
     public void Process_RegularClient_Returns1292()
     {
-        decimal actual = LegacyProcessor.Process(1, "Іван", "a@b.com", true, Lines(),
-            new DateOnly(2026, 3, 10), "", "New", false, 60m, out string state);
-        Assert.Equal(1292.70m, actual);
-        Assert.Equal("Paid", state);
+        RaceOutcome actual = LegacyProcessor.Process(Request(isRegular: true));
+        Assert.Equal(1292.70m, actual.Total);
+        Assert.Equal("Paid", actual.NewStatus);
     }
 
     [Fact]
     public void Process_SmallOrder_AddsDelivery()
     {
-        List<RaceChargeLine> lines = new()
+        RaceRequest request = Request("Paid") with
         {
-            new RaceChargeLine { Code = "100m", Quantity = 2, UnitPrice = 200m },
+            Lines = new List<RaceChargeLine> { new() { Code = "100m", Quantity = 2, UnitPrice = 200m } },
         };
-        decimal actual = LegacyProcessor.Process(2, "Іван", "a@b.com", false, lines,
-            new DateOnly(2026, 3, 10), "", "Paid", false, 60m, out string state);
-        Assert.Equal(460m, actual);
-        Assert.Equal("Shipped", state);
+        RaceOutcome actual = LegacyProcessor.Process(request);
+        Assert.Equal(460m, actual.Total);
+        Assert.Equal("Shipped", actual.NewStatus);
     }
 
     [Fact]
     public void Process_CancelledDocument_ReturnsZero()
     {
-        decimal actual = LegacyProcessor.Process(3, "Іван", "a@b.com", false, Lines(),
-            new DateOnly(2026, 3, 10), "", "Cancelled", false, 60m, out string state);
-        Assert.Equal(0m, actual);
-        Assert.Equal("Cancelled", state);
+        RaceOutcome actual = LegacyProcessor.Process(Request("Cancelled"));
+        Assert.Equal(0m, actual.Total);
+        Assert.Equal("Cancelled", actual.NewStatus);
     }
 }
