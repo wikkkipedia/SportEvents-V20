@@ -41,22 +41,7 @@ public class SportLegacyProcessor
 
         decimal subtotal = CalculateSubtotal(items);
 
-        decimal discount = 0m;
-        if (clientKind == "vip")
-        {
-            discount = subtotal * 0.15m;
-            if (discount > MaxDiscount) discount = MaxDiscount;
-        }
-        else if (clientKind == "staff")
-        {
-            discount = subtotal * 0.30m;
-            if (discount > MaxDiscount) discount = MaxDiscount;
-        }
-        else if (clientDone > 10)
-        {
-            discount = subtotal * 0.05m;
-            if (discount > MaxDiscount) discount = MaxDiscount;
-        }
+        decimal discount = CalculateDiscount(subtotal, clientKind, clientDone);
 
         decimal ship = 0m;
         if (subtotal - discount < FreeShippingThreshold) ship = ShippingCost;
@@ -83,22 +68,7 @@ public class SportLegacyProcessor
     public decimal Preview(string clientKind, int clientDone, List<SportsResultLine> items)
     {
         decimal s = CalculateSubtotal(items);
-        decimal d = 0m;
-        if (clientKind == "vip")
-        {
-            d = s * 0.15m;
-            if (d > MaxDiscount) d = MaxDiscount;
-        }
-        else if (clientKind == "staff")
-        {
-            d = s * 0.30m;
-            if (d > MaxDiscount) d = MaxDiscount;
-        }
-        else if (clientDone > 10)
-        {
-            d = s * 0.05m;
-            if (d > MaxDiscount) d = MaxDiscount;
-        }
+        decimal d = CalculateDiscount(s, clientKind, clientDone);
         decimal sh = 0m;
         if (s - d < FreeShippingThreshold) sh = ShippingCost;
         return s - d + sh;
@@ -113,6 +83,28 @@ public class SportLegacyProcessor
         int years = DateTime.Now.Year - c.SinceUtc.Year;
         s += " стаж " + years;
         return s;
+    }
+
+    private static decimal CalculateDiscount(decimal subtotal, string kind, int done)
+    {
+        decimal discount = 0m;
+        if (kind == "vip")
+        {
+            discount = subtotal * 0.15m;
+            if (discount > MaxDiscount) discount = MaxDiscount;
+        }
+        else if (kind == "staff")
+        {
+            discount = subtotal * 0.30m;
+            if (discount > MaxDiscount) discount = MaxDiscount;
+        }
+        else if (done > 10)
+        {
+            discount = subtotal * 0.05m;
+            if (discount > MaxDiscount) discount = MaxDiscount;
+        }
+
+        return discount;
     }
 
     private static decimal CalculateSubtotal(List<SportsResultLine> items)
