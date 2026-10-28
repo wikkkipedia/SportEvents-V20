@@ -1,6 +1,8 @@
 using SportEvents.Core.Domain;
 using Xunit;
+
 namespace SportEvents.Tests;
+
 public sealed class CompetitionDistanceTests
 {
     [Fact]

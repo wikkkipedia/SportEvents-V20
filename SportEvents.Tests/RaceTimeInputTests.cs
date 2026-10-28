@@ -1,6 +1,8 @@
 using SportEvents.Core.Application;
 using Xunit;
+
 namespace SportEvents.Tests;
+
 public sealed class RaceTimeInputTests
 {
     [Theory]
