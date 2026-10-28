@@ -1,7 +1,9 @@
 using SportEvents.Core.Application;
 using SportEvents.Core.Domain;
 using Xunit;
+
 namespace SportEvents.Tests;
+
 public sealed class ResultTableTests
 {
     private readonly ResultTable _table = new();
