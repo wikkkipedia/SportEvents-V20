@@ -28,7 +28,7 @@ import sys
 stage=sys.argv[1] if len(sys.argv)>1 else "before"
 out=root/"docs/lab03-completion"
 out.mkdir(exist_ok=True,parents=True)
-marker="public static decimal Process("
+marker="public static RaceOutcome Process(" if stage == "after" else "public static decimal Process("
 result=measure(source,marker)
 with (out/f"metrics-{stage}.csv").open("w",newline="",encoding="utf-8") as f:
     w=csv.writer(f);w.writerow(["method","nonempty_lines","approx_cyclomatic","max_block_depth","parameters"]);w.writerow(result)
