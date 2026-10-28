@@ -30,7 +30,7 @@ dotnet restore SportEvents.sln
 dotnet build SportEvents.sln -c Release -warnaserror
 dotnet test SportEvents.Tests/SportEvents.Tests.csproj -c Release -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura
 ```
-У проєкті використано `coverlet.msbuild`; звіт Cobertura створюється після реального запуску. Покриття в цій копії **не вимірювалося**, адже .NET SDK недоступний у середовищі створення матеріалів. Не підміняйте факт запуску кількістю написаних тестів.
+У проєкті використано coverlet.msbuild. Реально перевірено на Windows 11, .NET SDK 9.0.318 із TargetFramework net8.0: **137 із 137 тестів зелені**, рядкове покриття всього рішення **90,59%**, гілок **83,47%**. Для основної бібліотеки SportEvents.Core — 96,56% рядків. Логи збережено у docs/lab06-completion, а попередня перевірка — verification.
 
 ## 6. Технології
 .NET 8, C# 12, xUnit, coverlet.msbuild, Roslyn, StyleCop.Analyzers, GitHub Actions, JSON.
@@ -39,7 +39,7 @@ dotnet test SportEvents.Tests/SportEvents.Tests.csproj -c Release -p:CollectCove
 ```bash
 dotnet restore SportEvents.sln && dotnet format SportEvents.sln --verify-no-changes --no-restore && dotnet build SportEvents.sln -c Release -warnaserror && dotnet test SportEvents.Tests/SportEvents.Tests.csproj -c Release --no-restore -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura -p:Threshold=70 -p:ThresholdType=line -p:ThresholdStat=total
 ```
-Конвеєр `.github/workflows/ci.yml` повторює ці перевірки та зберігає звіт як артефакт. Червоний/зелений прогін GitHub не підтверджено: репозиторій не опубліковано.
+Конвеєр `.github/workflows/ci.yml` повторює ці перевірки та зберігає звіт як артефакт. Локальний конвеєр проходить (restore, dotnet format, Release build, тести). Червоний/зелений онлайн-прогін GitHub наразі не підтверджено, доки не виконано авторизацію і публікацію репозиторію.
 
 ## 8. Обмеження і борг
-Немає графічного інтерфейсу, бази даних і вебсервісу. Фініш зберігається з точністю до мілісекунд; суддівська фотофінішна система не передбачена. Не підтримано командні естафети, дискваліфікацію та імпорт результатів із пристроїв. Журнал містить лише коди подій і номери, а не імена учасників. Потрібно виконати реальний `dotnet test` та перевірити рядкове/гілкове покриття перед здачею.
+Немає графічного інтерфейсу, бази даних і вебсервісу. Фініш зберігається з точністю до мілісекунд; суддівська фотофінішна система не передбачена. Не підтримано командні естафети, дискваліфікацію та імпорт результатів із пристроїв. Журнал містить лише коди подій і номери, а не імена учасників. Реальний dotnet test виконано, а відсотки покриття наведено вище. Старі успадковані навчальні модулі у каталозі labs збережено для перевірки ЛР №2, №3 і №6; вони не використовуються в основній консолі.
