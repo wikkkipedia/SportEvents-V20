@@ -9,9 +9,14 @@ public class Lab03LegacyProcessorTests
     {
         return new RaceRequest
         {
-            DocId = 1, ClientName = "Іван", ClientEmail = "a@b.com", Status = status,
-            IsRegular = isRegular, CreatedAt = new DateOnly(2026, 3, 10),
-            DeliveryPrice = 60m, Lines = new List<RaceChargeLine>
+            DocId = 1,
+            ClientName = "Іван",
+            ClientEmail = "a@b.com",
+            Status = status,
+            IsRegular = isRegular,
+            CreatedAt = new DateOnly(2026, 3, 10),
+            DeliveryPrice = 60m,
+            Lines = new List<RaceChargeLine>
             {
                 new() { Code = "100m", Quantity = 12, UnitPrice = 100m },
                 new() { Code = "200m", Quantity = 1, UnitPrice = 250m },
