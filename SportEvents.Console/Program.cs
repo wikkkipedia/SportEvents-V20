@@ -34,7 +34,9 @@ internal static class Program
         {
             ShowMenu();
             string? choice = System.Console.ReadLine();
-            if (choice == "0")
+            // EOF is expected when input is redirected or the terminal is closed.
+            // Exit instead of repeatedly printing the menu on null input.
+            if (choice is null || choice == "0")
             {
                 break;
             }

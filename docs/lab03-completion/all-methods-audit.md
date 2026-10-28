@@ -1,0 +1,20 @@
+# ЛР №3 — перевірка всіх методів
+
+Аудит проведено за правилами методички: CC = 1 + if/for/foreach/while/catch/case + логічні && та || + альтернативи C# pattern or. Метод має не більше 6 CC і не більше 4 параметрів.
+
+Підрахунок скриптовий за текстом C#, він не є офіційною метрикою Roslyn; для наведених методів структуру перевірено за вихідним кодом.
+
+| Метод | CC | Логічні рядки | Вкладеність | Параметри | Статус |
+|---|---:|---:|---:|---:|---|
+| Process | 4 | 14 | 1 | 1 | PASS |
+| Validate | 6 | 10 | 1 | 1 | PASS |
+| ValidateParticipant | 4 | 5 | 1 | 1 | PASS |
+| IsKnownStatus | 4 | 1 | 0 | 1 | PASS |
+| ValidateLines | 4 | 6 | 2 | 1 | PASS |
+| CalculateLines | 3 | 7 | 2 | 1 | PASS |
+| ApplyDiscounts | 2 | 5 | 1 | 2 | PASS |
+| ApplyTierDiscount | 4 | 7 | 1 | 2 | PASS |
+| ApplyCouponDiscount | 4 | 5 | 1 | 2 | PASS |
+| ApplyDelivery | 3 | 5 | 1 | 2 | PASS |
+| TransitionStatus | 4 | 5 | 1 | 2 | PASS |
+| BuildReport | 2 | 9 | 1 | 3 | PASS |
