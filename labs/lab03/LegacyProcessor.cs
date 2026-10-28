@@ -72,7 +72,7 @@ public static class LegacyProcessor
             return "Помилка: немає клієнта";
         }
 
-        if (request.ClientEmail == null || !request.ClientEmail.Contains("@"))
+        if (request.ClientEmail == null || !request.ClientEmail.Contains('@'))
         {
             return "Помилка: пошта клієнта";
         }

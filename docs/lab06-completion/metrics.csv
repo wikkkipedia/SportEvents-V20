@@ -1,0 +1,3 @@
+stage,handle_nonblank_lines,approx_cyclomatic,max_block_depth,parameters
+before,70,17,5,11
+after,48,8,2,1
