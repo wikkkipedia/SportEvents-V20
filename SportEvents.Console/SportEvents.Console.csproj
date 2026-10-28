@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><GenerateDocumentationFile>false</GenerateDocumentationFile><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../SportEvents.Core/SportEvents.Core.csproj" /></ItemGroup>
+</Project>
