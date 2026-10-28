@@ -6,5 +6,5 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="3.0.1" />
     <PackageReference Include="coverlet.msbuild" Version="6.0.4" />
   </ItemGroup>
-  <ItemGroup><ProjectReference Include="../SportEvents.Core/SportEvents.Core.csproj" /><ProjectReference Include="..\labs\lab03\SportEvents.Lab03.csproj" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../SportEvents.Core/SportEvents.Core.csproj" /><ProjectReference Include="..\labs\lab03\SportEvents.Lab03.csproj" /><ProjectReference Include="..\labs\lab06\SportEvents.Legacy.csproj" /></ItemGroup>
 </Project>
