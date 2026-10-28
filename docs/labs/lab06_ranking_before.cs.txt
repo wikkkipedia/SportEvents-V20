@@ -1,0 +1,14 @@
+// Зразок до рефакторингу (навмисно довгий складний вираз), поза компіляцією.
+public class ResultTable
+{
+    public List<Result> Rank(List<Result> r)
+    {
+        for (int i = 0; i < r.Count; i++)
+            for (int j = i + 1; j < r.Count; j++)
+                if ((r[i].Group > r[j].Group) ||
+                    (r[i].Group == r[j].Group && (r[i].Time > r[j].Time ||
+                    (r[i].Time == r[j].Time && r[i].ParticipantId > r[j].ParticipantId))))
+                    (r[i], r[j]) = (r[j], r[i]);
+        return r;
+    }
+}
