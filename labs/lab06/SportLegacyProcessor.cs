@@ -26,8 +26,6 @@ public class SportLegacyProcessor
     private const decimal MaxDiscount = 500m;
     private const decimal FreeShippingThreshold = 1000m;
     private const decimal ShippingCost = 60m;
-    private decimal _subtotal;
-    private decimal _discount;
     private readonly List<string> _log = new();
 
     public string Handle(int docId, int clientId, string clientName,
@@ -65,32 +63,32 @@ public class SportLegacyProcessor
             return "ERR: null";
         }
 
-        _subtotal = 0m;
+        decimal subtotal = 0m;
         for (int i = 0; i < items.Count; i++)
         {
-            _subtotal += items[i].Qty * items[i].Price;
+            subtotal += items[i].Qty * items[i].Price;
         }
 
-        _discount = 0m;
+        decimal discount = 0m;
         if (clientKind == "vip")
         {
-            _discount = _subtotal * 0.15m;
-            if (_discount > MaxDiscount) _discount = MaxDiscount;
+            discount = subtotal * 0.15m;
+            if (discount > MaxDiscount) discount = MaxDiscount;
         }
         else if (clientKind == "staff")
         {
-            _discount = _subtotal * 0.30m;
-            if (_discount > MaxDiscount) _discount = MaxDiscount;
+            discount = subtotal * 0.30m;
+            if (discount > MaxDiscount) discount = MaxDiscount;
         }
         else if (clientDone > 10)
         {
-            _discount = _subtotal * 0.05m;
-            if (_discount > MaxDiscount) _discount = MaxDiscount;
+            discount = subtotal * 0.05m;
+            if (discount > MaxDiscount) discount = MaxDiscount;
         }
 
         decimal ship = 0m;
-        if (_subtotal - _discount < FreeShippingThreshold) ship = ShippingCost;
-        decimal total = _subtotal - _discount + ship;
+        if (subtotal - discount < FreeShippingThreshold) ship = ShippingCost;
+        decimal total = subtotal - discount + ship;
 
         string txt = "Документ #" + docId + "\n";
         txt += "Клієнт: " + clientName + "\n";
@@ -99,7 +97,7 @@ public class SportLegacyProcessor
             txt += items[i].Code + " x" + items[i].Qty + " = " +
                 (items[i].Qty * items[i].Price).ToString("0.00") + " " + currency + "\n";
         }
-        txt += "Знижка: " + _discount.ToString("0.00") + " " + currency + "\n";
+        txt += "Знижка: " + discount.ToString("0.00") + " " + currency + "\n";
         txt += "Доставка: " + ship.ToString("0.00") + " " + currency + "\n";
         txt += "Разом: " + total.ToString("0.00") + " " + currency + "\n";
 
