@@ -39,11 +39,7 @@ public class SportLegacyProcessor
         if (clientMail is null || !clientMail.Contains("@")) return "ERR: mail";
         _log.Add("ok " + docId);
 
-        decimal subtotal = 0m;
-        for (int i = 0; i < items.Count; i++)
-        {
-            subtotal += items[i].Qty * items[i].Price;
-        }
+        decimal subtotal = CalculateSubtotal(items);
 
         decimal discount = 0m;
         if (clientKind == "vip")
@@ -86,11 +82,7 @@ public class SportLegacyProcessor
 
     public decimal Preview(string clientKind, int clientDone, List<SportsResultLine> items)
     {
-        decimal s = 0m;
-        foreach (var it in items)
-        {
-            s += it.Qty * it.Price;
-        }
+        decimal s = CalculateSubtotal(items);
         decimal d = 0m;
         if (clientKind == "vip")
         {
@@ -121,6 +113,17 @@ public class SportLegacyProcessor
         int years = DateTime.Now.Year - c.SinceUtc.Year;
         s += " стаж " + years;
         return s;
+    }
+
+    private static decimal CalculateSubtotal(List<SportsResultLine> items)
+    {
+        decimal total = 0m;
+        foreach (var line in items)
+        {
+            total += line.Qty * line.Price;
+        }
+
+        return total;
     }
 
     public string DumpLog()
