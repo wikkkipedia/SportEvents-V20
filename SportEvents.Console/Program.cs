@@ -43,38 +43,48 @@ internal static class Program
         });
 
         EventService service = new(repo, clock, new RankingPolicy(), log, factory.CreateLogger<EventService>());
+        System.Console.WriteLine($"SportEvents v{typeof(Program).Assembly.GetName().Version?.ToString(3) ?? "unknown"}");
         System.Console.WriteLine("SportEvents | варіант 20 | демонстраційна база: 60 учасників");
+        RunMenu(service, log);
+    }
+
+    private static void RunMenu(EventService service, IAuditLogger log)
+    {
         while (true)
         {
             ShowMenu();
             string? choice = System.Console.ReadLine()?.Trim();
-            // EOF is expected when input is redirected or the terminal is closed.
-            // Exit instead of repeatedly printing the menu on null input.
             if (choice is null || choice == "0")
             {
                 break;
             }
 
-            try
-            {
-                Perform(choice, service);
-            }
-            catch (Exception ex) when (ex is ArgumentException or DomainRuleException or FormatException)
-            {
-                log.Write("Warning", "MENU", ex.GetType().Name);
-                System.Console.WriteLine("Помилка: " + ex.Message);
-            }
-            catch (System.Text.Json.JsonException ex)
-            {
-                log.Write("Error", "JSON", ex.GetType().Name);
-                System.Console.WriteLine("Пошкоджено JSON-файл: " + ex.Message);
-            }
-            catch (IOException ex)
-            {
-                log.Write("Error", "IO", ex.GetType().Name);
-                System.Console.WriteLine("Не вдалося прочитати або записати файл: " + ex.Message);
-            }
+            ExecuteMenuChoice(choice, service, log);
         }
+    }
+
+    private static void ExecuteMenuChoice(string choice, EventService service, IAuditLogger log)
+    {
+        try
+        {
+            Perform(choice, service);
+        }
+        catch (Exception ex) when (ex is ArgumentException or DomainRuleException or FormatException)
+        {
+            log.Write("Warning", "MENU", ex.GetType().Name);
+            System.Console.WriteLine("Помилка: " + ex.Message);
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            log.Write("Error", "JSON", ex.GetType().Name);
+            System.Console.WriteLine("Некоректний JSON-файл: " + ex.Message);
+        }
+        catch (IOException ex)
+        {
+            log.Write("Error", "IO", ex.GetType().Name);
+            System.Console.WriteLine("Не вдалося прочитати або записати файл: " + ex.Message);
+        }
+
     }
 
     private static void ShowMenu()
