@@ -32,7 +32,7 @@ dotnet restore SportEvents.sln
 dotnet build SportEvents.sln -c Release -warnaserror
 dotnet test SportEvents.Tests/SportEvents.Tests.csproj -c Release -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura
 ```
-У проєкті використано coverlet.msbuild. Реально перевірено на Windows 11, .NET SDK 9.0.318 із TargetFramework net8.0: **138 із 138 тестів зелені**, рядкове покриття всього рішення **90,59%**, гілок **83,47%**. Для основної бібліотеки SportEvents.Core — 96,56% рядків. Логи збережено у docs/lab06-completion, а попередня перевірка — verification.
+У проєкті використано coverlet.msbuild. Реально перевірено на Windows 11, .NET SDK 9.0.318 із TargetFramework net8.0: **145 із 145 тестів зелені**, рядкове покриття всього рішення **91,23%**, гілок **83,76%**. Для основної бібліотеки SportEvents.Core — 96,98% рядків. Логи збережено у docs/lab06-completion, а попередня перевірка — verification.
 
 ## 6. Технології
 .NET 8, C# 12, xUnit, coverlet.msbuild, Roslyn, StyleCop.Analyzers, GitHub Actions, JSON.
