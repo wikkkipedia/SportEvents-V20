@@ -13,9 +13,12 @@ public static class RaceTimeFormatter
         return duration.ToString(@"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
     }
 
+    private static bool IsValidRaceDuration(TimeSpan duration)
+        => duration > TimeSpan.Zero && duration < TimeSpan.FromDays(1);
+
     private static void ValidateDuration(TimeSpan duration)
     {
-        if (duration < TimeSpan.Zero || duration >= TimeSpan.FromDays(1))
+        if (!IsValidRaceDuration(duration))
         {
             throw new ArgumentOutOfRangeException(nameof(duration));
         }

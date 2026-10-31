@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.Logging;
 using SportEvents.Core.Application;
 using SportEvents.Core.Domain;
 using SportEvents.Core.Infrastructure;
@@ -27,8 +28,21 @@ internal static class Program
         IClock clock = new SystemClock();
         IEventRepository repo = new JsonEventRepository(Path.Combine(folder, "events.json"));
         IAuditLogger log = new FileAuditLogger(Path.Combine(folder, "audit.log"), clock);
-        EventService service = new(repo, clock, new RankingPolicy(), log);
-        service.SeedDemoParticipants();
+        // Seed demo records without flooding the user-facing console with 60 entries.
+        EventService seedService = new(repo, clock, new RankingPolicy(), log);
+        seedService.SeedDemoParticipants();
+
+        using ILoggerFactory factory = LoggerFactory.Create(builder =>
+        {
+            builder.AddSimpleConsole(options =>
+            {
+                options.TimestampFormat = "HH:mm:ss ";
+                options.IncludeScopes = true;
+            });
+            builder.SetMinimumLevel(LogLevel.Debug);
+        });
+
+        EventService service = new(repo, clock, new RankingPolicy(), log, factory.CreateLogger<EventService>());
         System.Console.WriteLine("SportEvents | варіант 20 | демонстраційна база: 60 учасників");
         while (true)
         {
