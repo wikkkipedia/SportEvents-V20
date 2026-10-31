@@ -15,7 +15,7 @@ public static class RaceTimeFormatter
 
     private static void ValidateDuration(TimeSpan duration)
     {
-        if (duration < TimeSpan.Zero || duration >= TimeSpan.FromDays(1))
+        if (duration <= TimeSpan.Zero || duration >= TimeSpan.FromDays(1))
         {
             throw new ArgumentOutOfRangeException(nameof(duration));
         }
