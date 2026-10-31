@@ -43,6 +43,21 @@ public sealed class InfrastructureTests
         {
             File.WriteAllText(path, "not json");
             Assert.Throws<System.Text.Json.JsonException>(() => new JsonEventRepository(path).Load());
+            string[] invalidSnapshots =
+            [
+                "null",
+                "{\"Events\":null}",
+                "{\"Events\":[null]}",
+                "{\"Participants\":[null]}",
+                "{\"Registrations\":[null]}",
+                "{\"Results\":[null]}",
+                "{\"Registrations\":[{\"EventId\":1,\"ParticipantId\":1,\"RegisteredOn\":\"2026-10-24\"}]}",
+            ];
+            foreach (string invalidSnapshot in invalidSnapshots)
+            {
+                File.WriteAllText(path, invalidSnapshot);
+                Assert.Throws<InvalidDataException>(() => new JsonEventRepository(path).Load());
+            }
         }
         finally
         {

@@ -12,6 +12,11 @@ public sealed class EventService
     private const int DemoAgeGroupCycle = 3;
     private const int DemoYearCycle = 5;
     private const int DemoBirthDay = 15;
+    private const int RegistrationStartEventId = 1001;
+    private const int RegistrationInvalidEventId = 1002;
+    private const int RegistrationDuplicateEventId = 1003;
+    private const int RegistrationErrorEventId = 1004;
+    private const int RegistrationSuccessEventId = 1005;
     private const int MonthsPerYear = 12;
     private const int JuniorStartYear = 2010;
     private const int AdultStartYear = 1990;
@@ -20,19 +25,19 @@ public sealed class EventService
         LoggerMessage.DefineScope<int>("Participant:{ParticipantId}");
 
     private static readonly Action<ILogger, int, Exception?> LogParticipantBegin =
-        LoggerMessage.Define<int>(LogLevel.Debug, new EventId(1001, "RegistrationStart"), "Початок реєстрації {ParticipantId}");
+        LoggerMessage.Define<int>(LogLevel.Debug, new EventId(RegistrationStartEventId, "RegistrationStart"), "Початок реєстрації {ParticipantId}");
 
     private static readonly Action<ILogger, int, Exception?> LogParticipantInvalid =
-        LoggerMessage.Define<int>(LogLevel.Warning, new EventId(1002, "RegistrationInvalid"), "Некоректні дані учасника {ParticipantId}");
+        LoggerMessage.Define<int>(LogLevel.Warning, new EventId(RegistrationInvalidEventId, "RegistrationInvalid"), "Некоректні дані учасника {ParticipantId}");
 
     private static readonly Action<ILogger, int, Exception?> LogParticipantDuplicate =
-        LoggerMessage.Define<int>(LogLevel.Warning, new EventId(1003, "RegistrationDuplicate"), "Учасник {ParticipantId} вже існує");
+        LoggerMessage.Define<int>(LogLevel.Warning, new EventId(RegistrationDuplicateEventId, "RegistrationDuplicate"), "Учасник {ParticipantId} вже існує");
 
     private static readonly Action<ILogger, int, Exception?> LogParticipantError =
-        LoggerMessage.Define<int>(LogLevel.Error, new EventId(1004, "RegistrationSaveFailed"), "Помилка збереження учасника {ParticipantId}");
+        LoggerMessage.Define<int>(LogLevel.Error, new EventId(RegistrationErrorEventId, "RegistrationSaveFailed"), "Помилка збереження учасника {ParticipantId}");
 
     private static readonly Action<ILogger, int, Exception?> LogParticipantSuccess =
-        LoggerMessage.Define<int>(LogLevel.Information, new EventId(1005, "RegistrationSucceeded"), "Зареєстровано учасника {ParticipantId}");
+        LoggerMessage.Define<int>(LogLevel.Information, new EventId(RegistrationSuccessEventId, "RegistrationSucceeded"), "Зареєстровано учасника {ParticipantId}");
 
     private readonly IEventRepository repository;
     private readonly IClock clock;

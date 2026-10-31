@@ -55,6 +55,10 @@ public sealed class AdditionalRulesTests
         {
             JsonEventRepository repo = new(path);
             DataSnapshot snapshot = new();
+            snapshot.Participants.Add(new Participant(1, "????", new DateOnly(2000, 1, 1)));
+            snapshot.Events.Add(new SportsEvent(1, "????", new DateOnly(2026, 11, 5),
+                1000, EventStatus.Open));
+            snapshot.Registrations.Add(new EventRegistration(1, 1, new DateOnly(2026, 10, 24)));
             snapshot.Results.Add(new FinishResult(1, 1, TimeSpan.FromMilliseconds(240123)));
             repo.Save(snapshot);
             Assert.Equal(TimeSpan.FromMilliseconds(240123), repo.Load().Results.Single().Elapsed);

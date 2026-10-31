@@ -25,8 +25,7 @@ public sealed class JsonEventRepository : IEventRepository
         }
 
         string json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<DataSnapshot>(json)
-            ?? throw new InvalidDataException("Файл JSON не містить об'єкта даних.");
+        return SnapshotValidator.Validate(JsonSerializer.Deserialize<DataSnapshot>(json));
     }
 
     /// <inheritdoc />

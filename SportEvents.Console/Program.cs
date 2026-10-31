@@ -8,6 +8,9 @@ namespace SportEvents.ConsoleApp;
 
 internal static class Program
 {
+    private const int AssemblyVersionComponents = 3;
+    private const int GroupColumnAlignment = -8;
+    private const int PlaceColumnAlignment = 2;
     private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
     private static readonly Dictionary<string, Action<EventService>> MenuActions = new()
     {
@@ -43,7 +46,7 @@ internal static class Program
         });
 
         EventService service = new(repo, clock, new RankingPolicy(), log, factory.CreateLogger<EventService>());
-        System.Console.WriteLine($"SportEvents v{typeof(Program).Assembly.GetName().Version?.ToString(3) ?? "unknown"}");
+        System.Console.WriteLine($"SportEvents v{typeof(Program).Assembly.GetName().Version?.ToString(AssemblyVersionComponents) ?? "unknown"}");
         System.Console.WriteLine("SportEvents | варіант 20 | демонстраційна база: 60 учасників");
         RunMenu(service, log);
     }
@@ -138,7 +141,7 @@ internal static class Program
         foreach (ProtocolRow row in service.GenerateProtocol(id))
         {
             string elapsed = row.Elapsed.ToString(@"hh\:mm\:ss\.fff", Culture);
-            System.Console.WriteLine($"{row.Group,-8} {row.Place,2} | #{row.ParticipantId} | {row.Name} | {elapsed}");
+            System.Console.WriteLine($"{row.Group,GroupColumnAlignment} {row.Place,PlaceColumnAlignment} | #{row.ParticipantId} | {row.Name} | {elapsed}");
         }
     }
 
