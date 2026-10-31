@@ -1,0 +1,10 @@
+{
+  "method_count": 194,
+  "lloc_proxy_all_3_projects": 1928,
+  "lloc_without_braces_proxy": 1353,
+  "max_method_lines": 27,
+  "max_cc_proxy": 8,
+  "max_nesting_proxy": 3,
+  "exceed": [],
+  "warning": "Lexical estimates; comments, strings, lambda and nesting may shift exact Roslyn metrics."
+}
