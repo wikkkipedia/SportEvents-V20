@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SportEvents.Core.Domain;
 
 namespace SportEvents.Core.Application;
@@ -14,43 +16,80 @@ public sealed class EventService
     private const int JuniorStartYear = 2010;
     private const int AdultStartYear = 1990;
     private const int MastersStartYear = 1965;
+    private static readonly Func<ILogger, int, IDisposable?> ParticipantScope =
+        LoggerMessage.DefineScope<int>("Participant:{ParticipantId}");
+
+    private static readonly Action<ILogger, int, Exception?> LogParticipantBegin =
+        LoggerMessage.Define<int>(LogLevel.Debug, new EventId(1001, "RegistrationStart"), "Початок реєстрації {ParticipantId}");
+
+    private static readonly Action<ILogger, int, Exception?> LogParticipantInvalid =
+        LoggerMessage.Define<int>(LogLevel.Warning, new EventId(1002, "RegistrationInvalid"), "Некоректні дані учасника {ParticipantId}");
+
+    private static readonly Action<ILogger, int, Exception?> LogParticipantDuplicate =
+        LoggerMessage.Define<int>(LogLevel.Warning, new EventId(1003, "RegistrationDuplicate"), "Учасник {ParticipantId} вже існує");
+
+    private static readonly Action<ILogger, int, Exception?> LogParticipantError =
+        LoggerMessage.Define<int>(LogLevel.Error, new EventId(1004, "RegistrationSaveFailed"), "Помилка збереження учасника {ParticipantId}");
+
+    private static readonly Action<ILogger, int, Exception?> LogParticipantSuccess =
+        LoggerMessage.Define<int>(LogLevel.Information, new EventId(1005, "RegistrationSucceeded"), "Зареєстровано учасника {ParticipantId}");
+
     private readonly IEventRepository repository;
     private readonly IClock clock;
     private readonly IResultRanking ranking;
     private readonly IAuditLogger logger;
+    private readonly ILogger<EventService> structuredLogger;
 
     /// <summary>Initializes a new instance of the <see cref="EventService"/> class.Створює сервіс із тестованими залежностями.</summary>
     /// <param name="repository">Зберігання стану.</param>
     /// <param name="clock">Джерело поточного часу.</param>
     /// <param name="ranking">Політика розподілу місць.</param>
     /// <param name="logger">Журнал операцій.</param>
+    /// <param name="structuredLogger">Optional typed structured logger with scopes.</param>
     public EventService(IEventRepository repository, IClock clock,
-        IResultRanking ranking, IAuditLogger logger)
+        IResultRanking ranking, IAuditLogger logger,
+        ILogger<EventService>? structuredLogger = null)
     {
         this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         this.clock = clock ?? throw new ArgumentNullException(nameof(clock));
         this.ranking = ranking ?? throw new ArgumentNullException(nameof(ranking));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.structuredLogger = structuredLogger ?? NullLogger<EventService>.Instance;
     }
 
     /// <summary>Створює довідниковий запис учасника.</summary>
     /// <exception cref="ArgumentException">Некоректне ім'я, номер або дата.</exception>
     public void AddParticipant(int id, string name, DateOnly birthDate)
     {
+        using IDisposable? scope = ParticipantScope(structuredLogger, id);
+        LogParticipantBegin(structuredLogger, id, null);
+
         if (id <= 0 || string.IsNullOrWhiteSpace(name) || birthDate > DateOnly.FromDateTime(clock.Now.Date))
         {
-            throw new ArgumentException("Неправильні дані учасника.");
+            LogParticipantInvalid(structuredLogger, id, null);
+            throw new ArgumentException("Некоректні дані учасника.");
         }
 
         DataSnapshot data = repository.Load();
         if (data.Participants.Any(p => p.Id == id))
         {
-            throw new DomainRuleException("Учасник із таким номером уже є.");
+            LogParticipantDuplicate(structuredLogger, id, null);
+            throw new DomainRuleException("Учасник з таким номером уже є.");
         }
 
         data.Participants.Add(new Participant(id, name.Trim(), birthDate));
-        repository.Save(data);
+        try
+        {
+            repository.Save(data);
+        }
+        catch (IOException ex)
+        {
+            LogParticipantError(structuredLogger, id, ex);
+            throw;
+        }
+
         logger.Write("Information", "UC-01", $"Додано учасника #{id}");
+        LogParticipantSuccess(structuredLogger, id, null);
     }
 
     /// <summary>Створює змагання у стані Planned.</summary>
