@@ -22,23 +22,31 @@ public sealed class RankingPolicy : IResultRanking
         List<ProtocolRow> protocol = new();
         foreach (var group in completed.OrderBy(g => g.Key))
         {
-            TimeSpan? previous = null;
-            int place = 0;
-            int index = 0;
-            foreach (var item in group.OrderBy(x => x.Result.Elapsed).ThenBy(x => x.Participant.Id))
-            {
-                index++;
-                if (previous != item.Result.Elapsed)
-                {
-                    place = index;
-                }
-
-                previous = item.Result.Elapsed;
-                protocol.Add(new(item.Participant.Id, item.Participant.FullName,
-                    group.Key, item.Result.Elapsed, place));
-            }
+            AppendGroupRows(protocol, group.Key, group);
         }
 
         return protocol;
+    }
+
+    private static void AppendGroupRows(
+        List<ProtocolRow> protocol,
+        AgeGroup group,
+        IEnumerable<(FinishResult Result, Participant Participant)> items)
+    {
+        TimeSpan? previous = null;
+        int place = 0;
+        int index = 0;
+        foreach (var item in items.OrderBy(x => x.Result.Elapsed).ThenBy(x => x.Participant.Id))
+        {
+            index++;
+            if (previous != item.Result.Elapsed)
+            {
+                place = index;
+            }
+
+            previous = item.Result.Elapsed;
+            protocol.Add(new(item.Participant.Id, item.Participant.FullName,
+                group, item.Result.Elapsed, place));
+        }
     }
 }

@@ -57,12 +57,27 @@ public sealed record EventRegistration(int EventId, int ParticipantId, DateOnly 
 public sealed record FinishResult(int EventId, int ParticipantId, TimeSpan Elapsed);
 
 /// <summary>Порушення правила переходу стану або участі у змаганні.</summary>
-public sealed class DomainRuleException : InvalidOperationException
+public sealed class DomainRuleException : Exception
 {
-    /// <summary>Initializes a new instance of the <see cref="DomainRuleException"/> class.Створює помилку з поясненням порушеного правила.</summary>
-    /// <param name="message">Повідомлення без персональних даних.</param>
+    /// <summary>Initializes a new instance of the <see cref="DomainRuleException"/> class.Creates a domain rule violation with a readable message.</summary>
+    /// <param name="message">A human-readable rule violation.</param>
     public DomainRuleException(string message)
-        : base(message)
+        : this("DOMAIN_RULE", message, null)
     {
     }
+
+    /// <summary>Initializes a new instance of the <see cref="DomainRuleException"/> class.Creates a rule violation, preserving its stable code and original exception.</summary>
+    /// <param name="ruleCode">Stable identifying code of violated rule.</param>
+    /// <param name="message">Description of the violation.</param>
+    /// <param name="innerException">Original exception when present.</param>
+    public DomainRuleException(string ruleCode, string message, Exception? innerException)
+        : base(message, innerException)
+    {
+        RuleCode = string.IsNullOrWhiteSpace(ruleCode)
+            ? throw new ArgumentException("A rule code is required.", nameof(ruleCode))
+            : ruleCode;
+    }
+
+    /// <summary>Gets the stable rule identifier.</summary>
+    public string RuleCode { get; }
 }
