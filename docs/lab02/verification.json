@@ -1,0 +1,15 @@
+{
+  "before": {
+    "bytes": 181,
+    "sha256": "089c87a97f5511d13236b25e4ea56da53ff8bccad2e3a10ec20e8712819f3935"
+  },
+  "after": {
+    "bytes": 181,
+    "sha256": "089c87a97f5511d13236b25e4ea56da53ff8bccad2e3a10ec20e8712819f3935"
+  },
+  "identical": true,
+  "build_exit": 0,
+  "diff_exit": 0,
+  "from_commit": "cdf1a81",
+  "to_commit": "775482f"
+}
