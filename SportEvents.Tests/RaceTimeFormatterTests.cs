@@ -15,4 +15,8 @@ public sealed class RaceTimeFormatterTests
     [Fact]
     public void Format_Negative_Throws()
         => Assert.Throws<ArgumentOutOfRangeException>(() => RaceTimeFormatter.Format(TimeSpan.FromMilliseconds(-1)));
+    [Fact]
+    public void Format_Zero_ThrowsBecauseRaceTimeMustBePositive()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => RaceTimeFormatter.Format(TimeSpan.Zero));
+
 }
